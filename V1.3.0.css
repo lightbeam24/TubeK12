@@ -6,8 +6,6 @@
 @author         lightbeam
 @preprocessor stylus
 @var checkbox chromium "Non-Firefox users must turn this option on" 0
-@var checkbox updateNotify13 "Dismiss the CURRENT update banner. (Does nothing if the option below is off)" 0
-@var checkbox updateNotify "Show me a banner when the style updates." 0
 @var checkbox newButton "NEW: Add channel menu button on top of sidebar [Doesn't work with all zoom levels yet.]" 1
 @var checkbox darkMode "NEW: Experimental dark mode. (Not complete)" 0
 @var checkbox oldBackground "Old site background (not compatible with dark mode.)" 1
@@ -98,7 +96,6 @@
   "4s (for slow connections)":  "4s",
   "5s (for slow connections)":  "5s",
 }
-@var checkbox greenBanner "Make update banners green (pointless? yes, but it works)" 0
 
 ==/UserStyle== */
 
@@ -3737,127 +3734,6 @@ ytd-rich-grid-renderer {
 
 @-moz-document url("https://www.youtube.com"), url("https://www.youtube.com/") {
 /* home page exclusive & animations */
-
-if updateNotify {
-    if not updateNotify13 {
-/* update message */
-#nav::before {
-  content: "";
-  background-image: url("https://s.ytimg.com/yt/imgbin/www-refresh-vflMLqC23.png");
-  display: block;
-  width: 33px;
-  height: 29px;
-  color: red;
-  position: absolute;
-  font-size: 33px;
-  margin-left: 257px;
-  margin-top: 62px;
-}
-if greenBanner {
-#nav::after {
-  background: var(--tubek12-realityshade-green-banner);
-}
-#nav::before {
-  background-position: 0 -90px !important;
-}
-@media only screen and (max-width: 1312px) {
-#nav::before {
-  background-position: 0px -52px !important;       
-}
-#nav::after {
-  content: "New features are available! Go to TubeK12's settings (in Stylus) to check it out! (and also to dismiss this banner) Please note that you are using a strictly unsupported screen resolution (under 1312 pixels wide). Try zooming out until this banner turns green." !important;
-  background: var(--tubek12-realityshade-red-banner) !important;
-}
-}
-}
-if not greenBanner {
-#nav::after {
-  background: var(--tubek12-realityshade-blue-banner);
-}
-#nav::before {
-  background-position: -279px -120px !important;
-}
-@media only screen and (max-width: 1312px) {
-#nav::before {
-  background-position: 0px -52px !important;       
-}
-#nav::after {
-  content: "New features are available! Go to TubeK12's settings (in Stylus) to check it out! (and also to dismiss this banner) Please note that you are using a strictly unsupported screen resolution (under 1312 pixels wide). Try zooming out until this banner turns blue." !important;
-  background: var(--tubek12-realityshade-red-banner) !important;
-}
-}
-}
-#nav::after {
-  /*content: 'TubeK12 has been updated to version 1.3.0! This is a major update, focusing mainly on the homepage and feed. Important customization options have been added, so review your settings. This message can be disabled in the style settings. (The gear icon next to TubeK12 in the Stylus menu.)';*/
-  content: "New features are available! Go to TubeK12's settings (in Stylus) to check it out! (and also to dismiss this banner) Important options near the top.";
-  margin: 0 250px 0 250px;
-  min-width: 800px !important;
-  padding: 11.5px 11px 10.5px 50px;
-  display: block;
-  margin-top: 62px;
-  border-radius: 3px;
-  font-size: 13px;
-  color: #fff;
-  text-shadow: 0 -1px 1px rgba(0,0,0,.45);
-  font-weight: bold;
-  opacity: 100%;
-  transition-duration: 0.5s;
-  box-shadow: 0 1px 2px rgba(0,0,0,.5),inset 0 0 1px rgba(0,0,0,.2);
-}
-/* WHYYYY */
-#contentContainer.tp-yt-app-drawer[opened] {
-  background: none !important;
-}
-ytd-app:not([use-content-visibility]) #page-manager.ytd-app {
-  display: flex;
-  flex: 1;
-    flex-basis: 0%;
-  flex-basis: 0.000000001px;
-  margin-top: 1px;
-}
-/* sidebar position */
-/* top part of sidebar */
-#start.ytd-masthead {
-  background: #6a6a6a;
-  padding: 8px 30.5px;
-  margin-left: -234px;
-  border-top-left-radius: 5px;
-  margin-top: 249px;
-  width: 159.5px;
-  transition-duration: formatAnim;
-  transition-delay: reformDelay;
-  transition-timing-function: cubic-bezier(.65,.05,.22,.85);
-}
-/* the sidebar itself */
-tp-yt-app-drawer.ytd-app[persistent] {
-  margin-top: 123px;
-  width: var(--tubek12-sidebar-width);
-  margin-left: 250px;
-}
-/* logo position */
-#logo.ytd-masthead {
-  width: 129px;
-  margin-left: -80px;
-  margin-top: -247px;
-  transition-duration: formatAnim;
-  transition-delay: reformDelay;
-  transition-timing-function: cubic-bezier(.65,.05,.22,.85);
-}
-#guide-button.ytd-masthead {
-  z-index: 9999999;
-}
-ytd-mini-guide-renderer.ytd-app {
-  z-index: 0;
-  margin-top: 80px;
-}
-.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
-  margin-top: 90px !important;
-}
-#header.ytd-browse {
-  margin-top: 24.5px;
-}
-}
-}
 /* new button */
 .style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
   content: "Channel Menu";
