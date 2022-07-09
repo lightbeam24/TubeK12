@@ -770,7 +770,7 @@ if chromium {
 tp-yt-paper-item:focus::before.tp-yt-paper-item.tp-yt-paper-item:focus::before {
   pointer-events: all !important;
 }
-/* remove shorts (I didn't know you could do this with pure css! Hell yeah!) */
+/* remove shorts (I didn't know you could do this with pure css!) */
 if hideShorts {
 .yt-simple-endpoint.ytd-guide-entry-renderer {
     &[title="Shorts"]{
@@ -1005,7 +1005,7 @@ if not newButton {
   display: none !important;
 }
 }
-/* Hides "add to queue". This was way harder than it needed to be because the element kept dissapearing goddamnit */
+/* Hides "add to queue". */
 .ytd-thumbnail[top-right-overlay] ~ .ytd-thumbnail[top-right-overlay] {
   display: none;
 }
