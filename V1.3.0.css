@@ -1,0 +1,4275 @@
+/* ==UserStyle==
+@name           TubeK12 - 2012 YouTube Recreation
+@namespace      youtube.com
+@version        1.3.0
+@description    Attempts to recreate the 2012 YouTube layout
+@author         lightbeam
+@preprocessor stylus
+@var checkbox chromium "Non-Firefox users must turn this option on" 0
+@var checkbox updateNotify13 "Dismiss the CURRENT update banner. (Does nothing if the option below is off)" 0
+@var checkbox updateNotify "Show me a banner when the style updates." 0
+@var checkbox newButton "NEW: Add channel menu button on top of sidebar [Doesn't work with all zoom levels yet.]" 1
+@var checkbox darkMode "NEW: Experimental dark mode. (Not complete)" 0
+@var checkbox oldBackground "Old site background (not compatible with dark mode.)" 1
+@var checkbox goodExplore "NEW: Make the Explore page replicate the old 'Browse' feature. [Stable, but only on light mode for now.]" 0
+@var checkbox channelList "NEW: List view for channel [Incomplete, and kind of glitchy]" 1
+@var checkbox sidebarIcons "NEW: Use old sidebar icons" 1
+@var checkbox hideShorts "NEW: Hide 'Shorts' sidebar button" 1
+@var checkbox historyPage "NEW: History page [Incomplete, semi-stable.]" 1
+@var text createText "NEW: Text for 'Create' button. (Must be in quotes)" ""Upload""
+@var text programsText "NEW: Text for 'YouTube apps' button. (Must be in quotes)" ""From YouTube""
+@var checkbox hideSidebarSearch "Now Optional: Hide sidebar on search page (Recommended)" 1
+@var checkbox oldPlayer "Recreate old video player [Incomplete.]" 1
+@advanced select descFix "Put description on a seperate line (Affects other things, such as comment count)" {
+  "Off (Like May 2022 onward)":  "auto",
+  "On (minor potentially unfixable issues)": "block",
+}
+@advanced select     hideMovies   "To be replaced: Hide Movies (recommended because of formatting issues)"   {
+  "On":  "none",
+  "Off": "auto",
+}
+@advanced select     hideHeatMap   "To be replaced: Hide Heat Map (most watched portions of video)"   {
+  "On":  "none",
+  "Off (like modern YT)": "auto",
+}
+@advanced select     staticMode   "To be replaced: Static Scrolling Mode (Recommended, non-static mode is broken)"   {
+  "On":  "absolute",
+  "Off (like modern YT)": "auto",
+}
+@advanced select     hideSponsor   "To be replaced: Hide Join button"   {
+  "On":  "none",
+  "Off": "flex",
+}
+@advanced select     hideMixes  "To be replaced: Hide mixes on watch page and in search results (recommended because of formatting issues)"   {
+  "Yes": "none",
+  "No":  "flex",
+}
+@advanced select     hidepfps    "To be replaced: Hide pfps on watch page"   {
+  "Yes": "none",
+  "No":  "block",
+}
+@advanced select     hidebadresults   "To be replaced: Hide irrelevant results in search (For You, People Also Watched, etc)"   {
+  "Yes":  "none",
+  "No": "block",
+}
+@var checkbox trueOldWatchPage "NEW: Experimental more accurate old watch page. [Incomplete, and doesn't work with some videos or zoom levels and progress bar is messed up among other issues. I cannot guarantee its completion.]" 0
+@var checkbox forceStaticLayout "NEW: Experimental: Force the site to be completely static (no scaling when zooming) [Currently ununsable]" 0
+@var checkbox sidebarChannel "NEW: Experimental: Put pfp on sidebar (That's what the below option is for) [Not recommended; doesn't really work, at least not yet.]" 0
+@var text pfpURL "NEW: Profile picture url. Right click on your profile picture anywhere on YouTube and copypaste it here. [Doesn't do anything without above option.]" url("https://s.ytimg.com/yt/img/no_videos_140-vfl5AhOQY.png")
+@advanced select     playerWidth   "[DEPRECATED]Experimental: Non-fullscreen player consistent width." {
+  "auto (like modern YT)": "auto",
+  "888 pixels (BUGGY)":  "888px",
+  "854 pixels (BUGGY)":  "854px",
+}
+@advanced select     playerHeight   "[DEPRECATED]Experimental: Non-fullscreen player consistent height." {
+  "auto (like modern YT)": "auto",
+  "500 pixels (BUGGY) [Use with 888]":  "500px",
+  "480 pixels (BUGGY) [Use with 854]":  "480px",
+}
+@advanced select     channelMitigate   "[DEPRECATED]Toggle this option if the channel page is broken"   {
+  "Off (I am viewing a channel WITH a background)":  "330px",
+  "On (I am viewing a channel WITHOUT a background)": "160px",
+}
+@advanced select     channelBGHide   "[DEPRECATED]Hide channel backgrounds (if you are tired of toggling the above option)"   {
+  "Off":  "auto",
+  "On": "none",
+}
+@advanced select     reformDelay   "Formatting issue cover up animation delay"   {
+  "No Delay":  "0s",
+  "0.1s":  "0.1s",
+  "0.5s":  "0.5s",
+  "1s":  "1s",
+  "1.25s":  "1.25s",
+  "1.5s": "1.5s",
+  "2s":  "2s",
+  "3s (for slow connections)":  "3s",
+  "4s (for slow connections)":  "4s",
+  "5s (for slow connections)":  "5s",
+}
+@advanced select     formatAnim   "Formatting issue cover up animation duration"   {
+  "None":  "0s",
+  "1s":  "1s",
+  "0.1s":  "0.1s",
+  "0.5s":  "0.5s",
+  "1.25s":  "1.25s",
+  "1.5s": "1.5s",
+  "2s":  "2s",
+  "3s (for slow connections)":  "3s",
+  "4s (for slow connections)":  "4s",
+  "5s (for slow connections)":  "5s",
+}
+@var checkbox greenBanner "Make update banners green (pointless? yes, but it works)" 0
+
+==/UserStyle== */
+
+@-moz-document domain("youtube.com") {
+/* Section 0: Variables */
+:root {
+/* images */
+--tubek12-pfp-border-radius: 0;
+/* sidebar top */
+--tubek12-sidebar-top-bg: #6a6a6a; /* If a section isn't using the variable, the entire section is probably bloat and must be investigated. */
+/* sidebar */
+--tubek12-sidebar-width: 220px;
+--tubek12-sidebar-bg: #272727;
+--tubek12-sidebar-non-item-text-color: #ccc;
+--tubek12-sidebar-item-width: 90%;
+--tubek12-sidebar-item-left-margin: 0%;
+--tubek12-sidebar-item-font-size: 12.5px;
+--tubek12-sidebar-active-item-background: #1c1c1c;
+--tubek12-sidebar-active-item-text-color: #ededed;
+--tubek12-sidebar-active-item-border-top: 1px solid #323232;
+--tubek12-sidebar-active-item-border-bottom: 1px solid #1b1b1b;
+--tubek12-sidebar-active-item-border-right: 4px solid #c4302b;
+--tubek12-sidebar-inactive-item-background: linear-gradient(to bottom,#292929 0,#252525 100%);
+--tubek12-sidebar-inactive-item-background-hover: #1c1c1c;
+--tubek12-sidebar-inactive-item-text-color: #999;
+--tubek12-sidebar-inactive-item-border-top: 1px solid #323232;
+--tubek12-sidebar-inactive-item-border-bottom: 1px solid #1b1b1b;
+--tubek12-sidebar-inactive-item-border-right: 4px solid transparent;
+--tubek12-sidebar-inactive-item-border-right-hover: 4px solid #6a6a6a;
+/* header */
+--tubek12-header-text-color: #fff;
+/* topbar */
+--tubek12-topbar-button-top-margin: 12px;
+--tubek12-topbar-button-font-size: 13px;
+/* banners */
+--tubek12-realityshade-red-banner: linear-gradient(to bottom,#c95145 0,#913d37 45px);
+--tubek12-realityshade-blue-banner: linear-gradient(to bottom,#6482ad 0,#3b557e 45px);
+--tubek12-realityshade-green-banner: linear-gradient(to bottom,#74a446 0,#4d7730 45px);
+--tubek12-realityshade-red-banner-2011: linear-gradient(to bottom,#cb3425 0,#9b281e 100%);
+--tubek12-realityshade-blue-banner-2011: linear-gradient(to bottom,#849fc2 0,#6683b3 100%);
+--tubek12-realityshade-green-banner-2011: /* missing :( [assuming it was even different] */ ;
+/* video titles */
+if darkMode {
+--tubek12-normal-text-color: #ccc !important;
+}
+if not darkMode {
+--tubek12-normal-text-color: #333 !important;
+}
+--tubek12-video-title-text-color-hover: #337bb5;
+--tubek12-video-title-text-color-hover-alt: #1c62b9;
+--tubek12-video-title-text-color-hover-alt-deprecated: #438bc5;
+/* other */
+--tubek12-filters-anim-duration: 0s;
+--tubek12-section-box-shadow: 12px 0px 12px #ddd;
+  --ytd-watch-flexy-width-ratio: 16 !important;
+  --ytd-watch-flexy-height-ratio: 9 !important;
+}
+/* screen size, not yet used but might solve some problems once it is */
+@media only screen and (min-width: 2560px) {
+:root {
+--tubek12-screen-width: 2560px;
+}
+}
+@media only screen and (max-width: 1920px) {
+:root {
+--tubek12-screen-width: 1920px;
+}
+}
+@media only screen and (max-width: 1536px) {
+:root {
+--tubek12-screen-width: 1536px;
+}
+}
+@media only screen and (max-width: 1525px) {
+:root {
+--tubek12-screen-width: 1525px;
+}
+}
+@media only screen and (max-width: 1366px) {
+:root {
+--tubek12-screen-width: 1366px;
+}
+}
+@media only screen and (max-height: 1080px) {
+:root {
+--tubek12-screen-height: 1080px;
+}
+}
+@media only screen and (max-height: 768px) {
+:root {
+--tubek12-screen-height: 768px;
+}
+}
+@media only screen and (max-height: 722px) {
+:root {
+--tubek12-screen-height: 722px;
+}
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 1: Universal */
+/* Hover size (applies to Search, subs, history, and possibly more) */
+ytd-video-renderer {
+  padding: 8px;
+  border-radius: 3px;
+  transition-duration: 0.25s;
+}
+/* Hover bg */
+ytd-video-renderer:hover {
+  background: rgba(255,255,255,.7);
+  box-shadow: 1px 1px 1px #bababa;
+  transition-duration: 0s;
+}
+/* BG everywhere */
+if oldBackground {
+/* background */
+ytd-page-manager > .ytd-page-manager {
+  background-image: url("https://s.ytimg.com/yt/imgbin/www-refreshbg-vflC3wnbM.png");
+}
+ytd-app {
+  background: transparent !important;
+}
+/* universal */
+html {
+  background: url("https://s.ytimg.com/yt/imgbin/www-refreshbg-vflC3wnbM.png") !important;
+}
+/* topbar color */
+ytd-masthead {
+  background-image: url("https://s.ytimg.com/yt/imgbin/www-refreshbg-vflC3wnbM.png");
+}
+ytd-item-section-renderer {
+  background: url("https://s.ytimg.com/yt/imgbin/www-refreshbg-vflC3wnbM.png");
+}
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 1.1: Topbar (all pages) */
+
+/* removed buttons */
+/* this removes extra padding between topbar buttons */
+ytd-topbar-menu-button-renderer #button.ytd-topbar-menu-button-renderer {
+  width: 0;
+}
+button.yt-icon-button[aria-label="Create"] {
+  display: none;
+}
+button.yt-icon-button[aria-label="YouTube apps"] {
+  display: none;
+}
+#buttons.ytd-masthead .ytd-masthead[is-icon-button]:nth-last-child(4):after {
+  content: programsText;
+  font-size: var(--tubek12-topbar-button-font-size);
+  color: var(--tubek12-normal-text-color);
+  text-transform: none;
+  text-decoration: none;
+  font-weight: 400;
+  margin-top: var(--tubek12-topbar-button-top-margin);
+  background: none;
+  margin-right: 2px;
+  border-right: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  max-height: 16px;
+  padding: 0 12px;
+}
+#buttons.ytd-masthead .ytd-masthead[is-icon-button]:nth-last-child(4):hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+#buttons.ytd-masthead .ytd-masthead[is-icon-button]:nth-last-child(5):after {
+  content: createText;
+  font-size: var(--tubek12-topbar-button-font-size);
+  color: var(--tubek12-normal-text-color);
+  text-transform: none;
+  text-decoration: none;
+  font-weight: 400;
+  margin-top: var(--tubek12-topbar-button-top-margin);
+  background: none;
+  margin-right: 5px;
+}
+#buttons.ytd-masthead .ytd-masthead[is-icon-button]:nth-last-child(5):hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+/* topbar color (1.3.0: there are multiple conflicting instances of this. An example is in section unsorted.) */
+ytd-masthead {
+  background: transparent;
+}
+/* Decides if topbar is static */
+#masthead-container.ytd-app {
+  position: staticMode;
+}
+/* hide voice search */
+#voice-search-button.ytd-masthead {
+  display: none;
+}
+/* unround your pfp on topbar */
+yt-img-shadow.ytd-topbar-menu-button-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+/* end button reposition. 1.3.0: align-items: center;    justify-content: flex-end;   min-width: 225px;  were all removed. */
+if not chromium {
+#end.ytd-masthead {
+  transition-duration: formatAnim;
+  transition-delay: reformDelay;
+  margin-right: 230px;
+}
+}
+if chromium {
+#end.ytd-masthead {
+  transition-duration: formatAnim;
+  transition-delay: reformDelay;
+  margin-right: 214px;
+}
+}
+}
+@-moz-document url-prefix("https://www.youtube.com/watch") {
+/* Section 1.1.1: Topbar (Watch page only) */
+/* Grab from watch page exclusive. */
+}
+@-moz-document domain("youtube.com") {
+/* Section 1.?: Logo */
+/* logo (1.3.0: Fully optimized.) */
+yt-icon.ytd-logo {
+  padding: 20px 14px 20px 16px;
+  background-image: url(https://s.ytimg.com/yt/imgbin/www-refresh-vflk40U3E.png);
+  background-position: 15px -280px;
+  height: 0;
+  background-repeat: no-repeat;
+  width: 80px;
+}
+/* hide country code */
+#country-code.ytd-topbar-logo-renderer {
+  display: none;
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 2: Search Bar */
+
+/* search bar left margin (1.3.0: Does this even do anything? I'm pretty sure the code below controls this. To be removed.)
+ytd-searchbox.ytd-masthead {
+  margin-left: 0;
+}
+/* searchbar position */
+#center.ytd-masthead {
+  margin-left: -20%;
+  margin-bottom: -0.6%;
+}
+/* search bar reposition (1.3.0: This was in section 7, which applies to all pages???) */
+ytd-searchbox.ytd-masthead {
+  margin-left: 120px;
+}
+/* search bar style */
+#container.ytd-searchbox {
+  border: 1px solid #aaa;
+  border-right: none;
+  border-radius: 2px 0 0 2px;
+  box-shadow: inset 0 0.5px 1px transparent;
+  height: 24px;
+  transition-duration: 0.25s;
+}
+#container.ytd-searchbox:hover {
+  box-shadow: inset 0 0.5px 1px #888;
+}
+/* remove extra padding on left when search focused */
+ytd-searchbox[has-focus] #container.ytd-searchbox {
+  padding-left: 8px;
+  margin-left: 32px;
+}
+/* part of above: both are needed to remove left icon */
+ytd-searchbox[has-focus] #search-icon.ytd-searchbox {
+  width: 0;
+  display: none;
+}
+#search-icon.ytd-searchbox {
+  display: none !important;
+  padding: 0 !important;
+}
+/* hide search words when unfocused */
+#search-input.ytd-searchbox-spt input {
+  opacity: 0%;
+}
+#search-input.ytd-searchbox-spt input:focus {
+  opacity: 100% !important;
+}
+#search-input.ytd-searchbox-spt input:hover {
+  opacity: 60%;
+}
+/* words */
+#search-input.ytd-searchbox-spt input {
+  font-size: 13px;
+  margin-left: -2px !important;
+  font-family: arial !important;
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 2.1: Search Icon */
+/* search icon replace (1.3.0:    background-position-x: 0%;background-position-y: 0%;background-repeat: repeat;  background-repeat: no-repeat; removed.)*/
+ytd-searchbox[system-icons] #search-icon-legacy.ytd-searchbox yt-icon.ytd-searchbox {
+  width: 16px;
+  height: 16px;
+  background: url(https://s.ytimg.com/yt/imgbin/www-refresh-vflk40U3E.png);
+  background-position: -18px -104px;
+  color: transparent;
+}
+/* search icon style */
+#search-icon-legacy.ytd-searchbox {
+  border-radius: 0 2px 2px 0;
+  height: 29.5px;
+  border: 1px solid #aaa;
+  box-shadow: inset 0 0 1px #fff !important;
+  background-image: linear-gradient(to bottom,#fafafa 0,#dcdcdc 100%) !important;
+  width: 38px;
+  margin-right: 26px;
+  opacity: 0.6;
+}
+#search-icon-legacy.ytd-searchbox:hover {
+  opacity: 1;
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 2.2: Search Suggestions */
+/* suggestions */
+.gstl_50 {
+  margin-left: 31.5px;
+  margin-top: -5.5px;
+  width: 502.5px !important;
+  min-width: 0 !important;
+  position: absolute !important;
+}
+.sbpqs_a::before {
+  height: 0px;
+  width: 0px;
+  content: none !important;
+  margin-right: 0px;
+}
+.sbsb_a {
+  padding: 1px 0 !important
+}
+.gsfs {
+  font-size: 1.4rem !important;
+}
+.sbsb_c {
+  line-height: 20px !important;
+}
+/* remove icon */
+.sbqs_c::before {
+  height: 0px;
+  width: 0px;
+  content: none !important;
+  margin-right: 0px;
+}
+.sbqs_c::before {
+  background: none;
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 3: Sidebar */
+/* Decides whether or not to make sidebar static */
+tp-yt-app-drawer.ytd-app[persistent] {
+  position: staticMode;
+}
+/* Make the top part of sidebar transparent. This is necessary. */
+ytd-app {
+  --app-drawer-content-container-background-color: transparent;
+}
+#footer {
+  pointer-events: all;
+}
+if sidebarChannel {
+    tp-yt-app-drawer.ytd-app[persistent] {
+  background: #2b2b2b;
+}
+    /* new button 2 */
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::before {
+  font-size: 12px;
+  color: #fff;
+  position: absolute;
+  padding: 11px 0 11px 53px;
+  margin-top: 120px;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.5);
+  z-index: 99922332129;
+  border-radius: 2px;
+  font-weight: bold;
+  width: 146px;
+  height: 70px;
+  background: url("https://s.ytimg.com/yt/img/no_videos_140-vfl5AhOQY.png") !important;
+    background-repeat: repeat;
+    background-size: auto;
+  background-repeat: repeat;
+  background-size: auto;
+  content: "Your Channel Name";
+  background-repeat: no-repeat !important;
+  background-size: 90px !important;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition:hover::before {
+  background: linear-gradient(to bottom,#096bd2 0,#0053a6 100%);
+  box-shadow: inset 0 1px 0 rgba(256,256,256,0.35),0 1px 3px rgba(0,0,0,0.5);
+  border-color: #002d59 #002d59 #000 !important;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition:active::before {
+  background: linear-gradient(to bottom, #003386, #094ba2 100%);
+  box-shadow: inset 0 2px 4px rgba(26,26,26,0.9),0 1px 3px rgba(0,0,0,0);
+  border: 2px solid;
+  border-color: #ccc !important;
+}
+/* sidebar position */
+/* top part of sidebar */
+#start.ytd-masthead {
+  background: #6a6a6a;
+  padding: 8px 30.5px;
+  margin-left: -4.4px;
+  border-top-left-radius: 5px;
+  margin-top: 120px;
+  width: 159.5px;
+  transition-duration: formatAnim;
+  transition-delay: reformDelay;
+  transition-timing-function: cubic-bezier(.65,.05,.22,.85);
+}
+/* the sidebar itself */
+tp-yt-app-drawer.ytd-app[persistent] {
+  margin-top: 184px !important;
+  width: var(--tubek12-sidebar-width);
+  margin-left: 12px;
+}
+#start.ytd-masthead {
+  margin-left: 250px;
+}
+/* logo position */
+#logo.ytd-masthead {
+  width: 129px;
+  margin-left: -80px;
+  margin-top: -120px;
+  transition-duration: formatAnim;
+  transition-delay: reformDelay;
+  transition-timing-function: cubic-bezier(.65,.05,.22,.85);
+}
+}
+/* new button */
+@media only screen and (min-width: 5120px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -87%;
+}
+}
+@media only screen and (max-width: 5120px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -4588px;
+}
+}
+@media only screen and (max-width: 3072px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -2538px;
+}
+}
+@media only screen and (max-width: 2880px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -2344px;
+}
+}
+@media only screen and (max-width: 2400px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1866px;
+}
+}
+@media only screen and (max-width: 2304px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1766px;
+}
+}
+@media only screen and (max-width: 2144px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1609px;
+}
+}
+@media only screen and (max-width: 2050px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1509px;
+}
+}
+@media only screen and (max-width: 2000px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1465px;
+}
+}
+@media only screen and (max-width: 1920px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1381px;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::before {
+ margin-left: -1381px;
+}
+}
+@media only screen and (max-width: 1890px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1346px;
+}
+}
+@media only screen and (max-width: 1838px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1302px;
+}
+}
+@media only screen and (max-width: 1787px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1252px;
+}
+}
+@media only screen and (max-width: 1760px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1220px;
+}
+}
+@media only screen and (max-width: 1750px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1200px;
+}
+}
+@media only screen and (max-width: 1720px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1157px;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::before{
+ margin-left: -1157px;
+}
+}
+@media only screen and (max-width: 1708px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1172px;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::before {
+ margin-left: -1172px;
+}
+}
+@media only screen and (max-width: 1696px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1160px;
+}
+}
+@media only screen and (max-width: 1662px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1124px;
+}
+}
+@media only screen and (max-width: 1600px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1064px;
+}
+}
+@media only screen and (max-width: 1536px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -998px;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::before {
+ margin-left: -998px;
+}
+}
+@media only screen and (max-width: 1526px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -990px;
+}
+}
+@media only screen and (max-width: 1488px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -950px;
+}
+}
+@media only screen and (max-width: 1480px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -936px;
+}
+}
+@media only screen and (max-width: 1467px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -930px;
+}
+}
+@media only screen and (max-width: 1440px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -906px;
+}
+}
+@media only screen and (max-width: 1420px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -872px;
+}
+#start.ytd-masthead {
+  width: 169px !important;
+}
+}
+@media only screen and (max-width: 1400px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -860px;
+}
+#start.ytd-masthead {
+  width: 172px !important;
+}
+}
+@media only screen and (max-width: 1366px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -830px;
+}
+#start.ytd-masthead {
+  width: 182px !important;
+}
+}
+@media only screen and (max-width: 1320px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -782px;
+}
+#start.ytd-masthead {
+  width: 200px !important;
+}
+}
+/*
+if chromium {
+@media only screen and (max-width: 1930px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1367px;
+}
+}
+@media only screen and (max-width: 1720px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1157px;
+}
+}
+@media only screen and (max-width: 1710px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -1157px;
+}
+}
+@media only screen and (max-width: 1536px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -983px;
+}
+}
+@media only screen and (max-width: 1526px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -964px;
+}
+}
+@media only screen and (max-width: 1420px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -842px;
+}
+#start.ytd-masthead {
+  width: 177px !important;
+}
+}
+@media only screen and (max-width: 1366px) {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+ margin-left: -812px;
+}
+#start.ytd-masthead {
+  width: 191px !important;
+}
+}
+}
+*/
+/* fix scroll */
+#guide-inner-content.ytd-app {
+  scrollbar-width: none !important;
+  background: none;
+  z-index: 0;
+  overscroll-behavior: unset !important;
+  pointer-events: none;
+}
+#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer {
+  pointer-events: all;
+}
+tp-yt-paper-item:focus::before.tp-yt-paper-item.tp-yt-paper-item:focus::before {
+  pointer-events: all !important;
+}
+/* remove shorts (I didn't know you could do this with pure css! Hell yeah!) */
+if hideShorts {
+.yt-simple-endpoint.ytd-guide-entry-renderer {
+    &[title="Shorts"]{
+          display: none !important;
+    }
+}
+}
+/* icons */
+.guide-icon.ytd-guide-entry-renderer {
+  color: #777;
+}
+.guide-icon.ytd-guide-entry-renderer {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  margin-right: 12px;
+}
+if sidebarIcons {
+.guide-icon.ytd-guide-entry-renderer {
+  opacity: 0;
+}
+.yt-simple-endpoint.ytd-guide-entry-renderer[title="Home"] {
+  background: no-repeat url("http://s.ytimg.com/yt/imgbin/www-guide-vflV-qsIq.png") 7px -31px;
+  background-size: 51px;
+}
+.yt-simple-endpoint.ytd-guide-entry-renderer[title="Explore"] {
+  background: no-repeat url("http://s.ytimg.com/yt/imgbin/www-guide-vflV-qsIq.png") 7px -1502px;
+  background-size: 49.5px;
+}
+.yt-simple-endpoint.ytd-guide-entry-renderer[title="Subscriptions"] {
+  background: no-repeat url("http://s.ytimg.com/yt/imgbin/www-guide-vflV-qsIq.png") 7px -1620.5px;
+  background-size: 49.5px;
+}
+.yt-simple-endpoint.ytd-guide-entry-renderer[title="Library"] {
+  background: no-repeat url("http://s.ytimg.com/yt/imgbin/www-guide-vflV-qsIq.png") 7px -1337px;
+  background-size: 49.5px;
+}
+.yt-simple-endpoint.ytd-guide-entry-renderer[title="Show more"] {
+  background: none !important;
+  min-height: 10px !important;
+  max-height: 20px !important;
+}
+.yt-simple-endpoint.ytd-guide-entry-renderer[title="Show less"] {
+  background: none !important;
+  min-height: 10px !important;
+  max-height: 20px !important;
+}
+.yt-simple-endpoint.ytd-guide-entry-renderer {
+  background: no-repeat url("http://s.ytimg.com/yt/imgbin/www-guide-vflV-qsIq.png") 7px -31px;
+  background-size: 51px;
+}
+}
+/*
+.yt-simple-endpoint.ytd-guide-entry-renderer[title="Settings"] {
+  background: no-repeat url("http://s.ytimg.com/yt/imgbin/www-guide-vflV-qsIq.png") 11px -1762px;
+  background-size: 62px;
+}
+*/
+/* sidebar position */
+/* top part of sidebar */
+#start.ytd-masthead {
+  background: var(--tubek12-sidebar-top-bg);
+  padding: 8px 30.5px;
+  margin-left: 234px;
+  border-top-left-radius: 5px;
+  margin-top: 120px;
+  width: 159.5px;
+  transition-duration: formatAnim;
+  transition-delay: reformDelay;
+  transition-timing-function: cubic-bezier(.65,.05,.22,.85);
+}
+/* the sidebar itself */
+tp-yt-app-drawer.ytd-app[persistent] {
+  margin-top: 60px;
+  width: var(--tubek12-sidebar-width);
+  margin-left: 250px;
+}
+/* logo position */
+#logo.ytd-masthead {
+  width: 129px;
+  margin-left: -80px;
+  margin-top: -120px;
+  transition-duration: formatAnim;
+  transition-delay: reformDelay;
+  transition-timing-function: cubic-bezier(.65,.05,.22,.85);
+}
+#guide-button.ytd-masthead {
+  z-index: 9999999;
+}
+ytd-mini-guide-renderer.ytd-app {
+  z-index: 0;
+  margin-top: 80px;
+}
+#guide-inner-content.ytd-app:hover {
+  scrollbar-color: transparent !important;
+}
+#guide-inner-content.ytd-app {
+  scrollbar-width: none !important;
+}
+#guide-content.ytd-app {
+  background: #272727 !important;
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 3A: Sidebar (Static Layout only) */
+if forceStaticLayout {
+#start.ytd-masthead {
+  margin-left: 0/*was17.5%orsmth*/ !important;
+}
+/* sidebar itself */
+tp-yt-app-drawer.ytd-app[persistent] {
+  margin-left: /*was18.2%*/ 0 !important;
+  display: block !important;
+  visibility: visible !important;
+}
+#end.ytd-masthead {
+  margin-right: 0 !important;
+}
+/*
+@media only screen and (max-width: 1312px) { 
+tp-yt-app-drawer {
+  position: absolute !important;
+  z-index: 3000 !important;
+  top: -5px;
+  right: none;
+  bottom: 0 !important;
+  visibility: visible !important;
+  transition-property: none !important;
+  left: 0/*was37%*//*;
+}
+}
+*/
+html {
+  width: 976px !important;
+  margin: 0 auto !important;
+}
+ytd-app {
+  width: 976px !important;
+  margin: 0 auto !important;
+}
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 3.1: Sidebar Items */
+/* non-item text */
+#guide-section-title.ytd-guide-section-renderer {
+  color: var(--tubek12-sidebar-non-item-text-color);
+  font-size: 1.2rem;
+  text-transform: none;
+  margin-left: -12px;
+}
+/* Height of sidebar items */
+ytd-guide-section-renderer {
+ --paper-item-min-height: 34px !important;
+}
+#sections.ytd-guide-renderer > .ytd-guide-renderer:not(:last-child) {
+  background: var(--tubek12-sidebar-bg) !important;
+}
+.title.ytd-guide-entry-renderer {
+  color: var(--tubek12-sidebar-inactive-item-text-color);
+  font-size: var(--tubek12-sidebar-item-font-size);
+}
+ytd-guide-entry-renderer[active] .title.ytd-guide-entry-renderer {
+  color: var(--tubek12-sidebar-active-item-text-color);
+  font-size: var(--tubek12-sidebar-item-font-size);
+}
+ytd-guide-entry-renderer[active] {
+  background: var(--tubek12-sidebar-active-item-background) !important;
+  border-right: var(--tubek12-sidebar-active-item-border-right) !important;
+  border-top: var(--tubek12-sidebar-active-item-border-top) !important;
+  border-bottom: var(--tubek12-sidebar-active-item-border-bottom) !important;
+}
+ytd-guide-entry-renderer[active]:hover {
+  border-right: var(--tubek12-sidebar-active-item-border-right) !important;
+}
+ytd-guide-entry-renderer {
+  background: var(--tubek12-sidebar-inactive-item-background) !important;
+  width: var(--tubek12-sidebar-item-width) !important;
+  margin-left: var(--tubek12-sidebar-item-left-margin) !important;
+  border-top: var(--tubek12-sidebar-inactive-item-border-top) !important;
+  border-bottom: var(--tubek12-sidebar-inactive-item-border-bottom) !important;
+  border-right: var(--tubek12-sidebar-inactive-item-border-right);
+  transition: border 0.2s ease;
+}
+ytd-guide-entry-renderer:hover {
+  border-right: var(--tubek12-sidebar-inactive-item-border-right-hover) !important;
+  background: var(--tubek12-sidebar-inactive-item-background-hover) !important;
+}
+#redux-mychannel {
+  background: var(--tubek12-sidebar-inactive-item-background) !important;
+  width: var(--tubek12-sidebar-item-width) !important;
+  margin-left: var(--tubek12-sidebar-item-left-margin) !important;
+  border-top: var(--tubek12-sidebar-inactive-item-border-top !important);
+  border-bottom: var(--tubek12-sidebar-inactive-item-border-bottom) !important;
+  border-right: var(--tubek12-sidebar-inactive-item-border-right) !important;
+  transition-duration: 0s !important;
+}
+#redux-mychannel:hover {
+  border-right: var(--tubek12-sidebar-inactive-item-border-right-hover) !important;
+  background: var(--tubek12-sidebar-inactive-item-background-hover) !important;
+}
+tp-yt-paper-item.ytd-guide-entry-renderer {
+  padding: 0 12px !important;
+}
+ytd-guide-entry-renderer[active] .guide-icon.ytd-guide-entry-renderer {
+  color: #eee;
+}
+.guide-icon.ytd-guide-entry-renderer {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  margin-right: 12px;
+}
+/* subs on sidebar */
+yt-img-shadow.ytd-guide-entry-renderer {
+  margin-right: 8px;
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+img.yt-img-shadow {
+  min-width: 30px;
+  min-height: 30px;
+    filter: inverted;
+}
+yt-img-shadow.ytd-guide-entry-renderer {
+  height: 30px;
+  width: 30px;
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 4: Home page/Header/General */
+
+if not newButton {
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+  display: none !important;
+}
+}
+/* Hides "add to queue". This was way harder than it needed to be because the element kept dissapearing goddamnit */
+.ytd-thumbnail[top-right-overlay] ~ .ytd-thumbnail[top-right-overlay] {
+  display: none;
+}
+ytd-thumbnail-overlay-toggle-button-renderer {
+  background-image: linear-gradient(to bottom,#fafafa 0,#dcdcdc 100%);
+  color: #555;
+}
+ytd-thumbnail-overlay-toggle-button-renderer[use-expandable-tooltip] {
+    /*
+  background: no-repeat url("https://s.ytimg.com/yt/imgbin/www-refresh-vflk40U3E.png") -115px -206px;
+    height: 13px;
+  */
+  background-image: linear-gradient(to bottom,#fafafa 0,#dcdcdc 100%);
+  color: #555;
+  margin-top: 80px;
+  width: 24px;
+  height: 24px;
+}
+ytd-thumbnail-overlay-toggle-button-renderer[use-expandable-tooltip][hovered] {
+  background-image: linear-gradient(to bottom,#fafafa 0,#dcdcdc 100%);
+}
+/* title replacement
+tp-yt-paper-tooltip {
+  border-radius: 4.5px;
+}
+/*
+html tp-yt-paper-tooltip .tp-yt-paper-tooltip[style-target="tooltip"] {
+  background: white;
+  color: #555;
+  padding: 1px 2px;
+  border: 1px solid #999;
+  animation-duration: 0.1s;
+  border-radius: 0;
+  margin: 2px;
+  box-shadow: 1px 2px 4px #999;
+  font-size: 11px;
+}
+*//*
+html tp-yt-paper-tooltip .tp-yt-paper-tooltip[style-target="tooltip"] {
+  background: #141420;
+  color: #eee;
+  padding: 2.5px 3px 0.5px 3px;
+  border: 1px solid #666;
+  animation-duration: 0s;
+  animation-delay: 0.15s;
+  border-radius: 4.5px;
+  margin: 0px;
+  font-size: 11px;
+  font-weight: 300;
+}
+/* remove text */
+#label-container.ytd-thumbnail-overlay-toggle-button-renderer {
+  display: none !important;
+}
+
+
+/* looking for something different (not fully working) */
+ytd-feed-nudge-renderer {
+  display: none;
+  height: 0;
+}
+/* dark mode bandaid */
+if not darkMode {
+ytd-rich-grid-renderer {
+  background: #fff !important;
+}
+}
+if darkMode {
+ytd-rich-grid-renderer {
+  background: #000 !important;
+}
+}
+/* hide chips */
+ytd-feed-filter-chip-bar-renderer {
+  display: none;
+}
+yt-related-chip-cloud-renderer {
+  display: none;
+}
+ytd-rich-grid-renderer {
+  background: #fff;
+}
+#primary.ytd-two-column-browse-results-renderer {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+/* list layout of home */
+    #contents.ytd-rich-grid-renderer {
+  display: inline list-item;
+}
+
+/* video title */
+#video-title.ytd-rich-grid-media {
+  color: var(--tubek12-normal-text-color);
+  font-family: arial !important;
+  font-size: 15px !important;
+  line-height: 1.2em !important;
+  font-weight: bold !important;
+  max-height: 2.4em !important;
+}
+#video-title.ytd-rich-grid-media:hover {
+  color: var(--tubek12-video-title-text-color-hover-alt);
+  text-decoration: underline;
+}
+/* THIS IS NEEDED FOR LIST */
+/* desc and other text for list */
+#details.ytd-rich-grid-media {
+  position: absolute;
+  margin: 0 -600px 0 210px !important;
+  flex: auto;
+  display: flex;
+  flex-direction: row;
+}
+/* list layout margins and stuff */
+ytd-rich-grid-row #contents.ytd-rich-grid-row {
+  width: 100%;
+  margin: 0 -3px;
+  display: inline-grid;
+}
+ytd-rich-item-renderer {
+  margin-bottom: -60px !important;
+  height: 180px !important;
+  min-width: 203px;
+  max-width: 203px;
+}
+/* text */
+ytd-rich-grid-media[mini-mode] h3.ytd-rich-grid-media {
+  margin-bottom: 2px;
+}
+/* text title */
+h3.ytd-rich-grid-media {
+  color: var(--yt-spec-text-primary);
+  margin: 3px 0;
+}
+/* thumbnails */
+ytd-rich-grid-media[mini-mode] {
+  max-width: 200px;
+}
+/* position of content */
+if not chromium {
+ytd-app[guide-persistent-and-visible] ytd-page-manager.ytd-app {
+  margin: 0 250px 0 470px;
+}
+}
+if chromium {
+ytd-app[guide-persistent-and-visible] ytd-page-manager.ytd-app {
+  margin: 0 236px 0 470px;
+}
+}
+/* NO LONGER NEEDED FOR LIST */
+/* subs menu and channel */
+ytd-section-list-renderer {
+  display: flex;
+  flex-direction: column;
+  margin: 4px;
+}
+#contents {
+  padding: 4px;
+}
+/* no pfps on homepage vids [1.3.0: Pretty sure this is an inaccuracy.] */
+#avatar.ytd-rich-grid-media {
+  display: none;
+}
+#avatar-link.ytd-rich-grid-media {
+  height: 0;
+  margin-top: 0;
+  margin-right: 0;
+}
+/* hide posts */
+ytd-rich-section-renderer[align-within-rich-grid] {
+  display: none;
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 4.1: Header (all pages) */
+/* header (general styling) */
+#header.ytd-browse {
+  background: #2b2b2b;
+  height: 46px;
+  border-top-right-radius: 5px;
+  margin-top: 4.25px;
+  margin-bottom: -15px;
+  background-image: linear-gradient(to bottom,#333333 0,#262626 100%);
+}
+/* header title */
+#guide-button.ytd-masthead::after {
+  margin-right: -400px;
+  color: var(--tubek12-header-text-color);
+  background: none;
+  font-size: 15px;
+  margin-left: 206px;
+  margin-top: -2px;
+  position: absolute;
+}
+}
+@-moz-document url("https://www.youtube.com"), url("https://www.youtube.com/") {
+/* Section 4.1.1: Header (homepage only) */
+/* Header title */
+#guide-button.ytd-masthead::after {
+  content: "Recommended for You";
+}
+#guide-icon.ytd-masthead {
+  color: transparent;
+  background: no-repeat url("http://s.ytimg.com/yt/imgbin/www-guide-vflV-qsIq.png");
+  background-position-x: 0px;
+  background-position-y: -1821px;
+  background-position-y: -721px !important;
+  height: 34px;
+  width: 34px;
+  margin-left: 178px;
+  margin-top: -22px;
+  z-index: 3000;
+  position: absolute;
+}
+}
+@-moz-document url-prefix("https://www.youtube.com/feed/subscriptions") {
+/* Section 4.1.2: Header (subs page only) */
+/* Header title */
+#guide-button.ytd-masthead::after {
+  content: "Subscriptions" !important;
+  margin-left: 170px;
+  margin-top: -2px;
+}
+/*
+#guide-icon.ytd-masthead {
+  color: transparent;
+  background: no-repeat url("http://s.ytimg.com/yt/imgbin/www-guide-vflV-qsIq.png");
+  background-position-x: 0px;
+  background-position-y: -721px;
+  height: 34px;
+  width: 34px;
+  margin-left: 178px;
+  margin-top: -22px;
+  z-index: 3000;
+  position: absolute;
+}
+*/
+}
+@-moz-document domain("youtube.com") {
+/* Section 5: Dropdown Menus */
+
+/* channel menu */
+/* unround pfp */
+#avatar.ytd-active-account-header-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+/* unround pfp */
+yt-img-shadow.ytd-account-item-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+/* items in the channel menu. (except for the device theme)  */
+ytd-compact-link-renderer {
+  --paper-item-min-height: 28px;
+}
+
+/* notifs (replicating 2013 for now) */
+/* unround + size */
+yt-img-shadow#avatar.ytd-notification-renderer {
+  height: 30px;
+  width: 30px;
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+img.yt-img-shadow {
+  height: auto !important;
+}
+
+/* notif section */
+ytd-notification-renderer {
+  padding: 8px 0;
+}
+/* text */
+.message.ytd-notification-renderer {
+  margin-bottom: 0;
+  font-size: 1.3rem;
+  line-height: 1.55rem;
+}
+/* how long ago */
+.metadata.ytd-notification-renderer {
+  font-size: 1rem;
+  line-height: 1.55rem;
+}
+/* circle */
+#new.ytd-notification-renderer {
+  margin: 14px 5px 0;
+}
+/* thumbnail */
+.thumbnail-container.ytd-notification-renderer {
+  margin: 0 16px;
+  width: 56px;
+  height: 32px;
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 6: Search Page (All Pages) */
+    
+/* hide movies */
+ytd-movie-renderer {
+  display: hideMovies;
+}
+/* video titles */
+#video-title.ytd-video-renderer {
+  color: var(--tubek12-normal-text-color);
+  font-family: arial !important;
+  font-size: 16px;
+  line-height: 2rem;
+  font-weight: 600;
+}
+#video-title.ytd-video-renderer:hover {
+  color: var(--tubek12-video-title-text-color-hover-alt);
+  text-decoration: underline;
+}
+/* remove movies and stuff */
+ytd-two-column-search-results-renderer[center-results] #secondary.ytd-two-column-search-results-renderer {
+  display: none;
+}
+
+/* video margin */
+ytd-button-renderer.ytd-item-section-renderer, ytd-compact-radio-renderer.ytd-item-section-renderer, ytd-compact-video-renderer.ytd-item-section-renderer, ytd-compact-movie-renderer.ytd-item-section-renderer, ytd-compact-playlist-renderer.ytd-item-section-renderer, ytd-emergency-onebox-renderer.ytd-item-section-renderer, ytd-feed-nudge-renderer.ytd-item-section-renderer, ytd-movie-renderer.ytd-item-section-renderer, ytd-playlist-renderer.ytd-item-section-renderer, ytd-show-renderer.ytd-item-section-renderer, ytd-radio-renderer.ytd-item-section-renderer, yt-search-no-results-renderer.ytd-item-section-renderer, ytd-video-renderer.ytd-item-section-renderer, ytd-channel-renderer.ytd-item-section-renderer, ytd-promoted-sparkles-text-search-renderer.ytd-item-section-renderer, ytd-web-answer-renderer.ytd-item-section-renderer, ytd-clarification-renderer.ytd-item-section-renderer, ytd-fact-check-renderer.ytd-item-section-renderer, ytd-info-panel-container-renderer.ytd-item-section-renderer {
+  margin-top: 4px !important;
+  margin-bottom: -8px !important;
+}
+/* size of videos */
+ytd-video-renderer[is-search] ytd-thumbnail.ytd-video-renderer {
+  margin-right: 12px;
+  max-width: 140px !important;
+  min-width: 140px !important;
+}
+ytd-button-renderer.ytd-item-section-renderer, ytd-compact-radio-renderer.ytd-item-section-renderer, ytd-compact-video-renderer.ytd-item-section-renderer, ytd-compact-movie-renderer.ytd-item-section-renderer, ytd-compact-playlist-renderer.ytd-item-section-renderer, ytd-emergency-onebox-renderer.ytd-item-section-renderer, ytd-feed-nudge-renderer.ytd-item-section-renderer, ytd-movie-renderer.ytd-item-section-renderer, ytd-playlist-renderer.ytd-item-section-renderer, ytd-show-renderer.ytd-item-section-renderer, ytd-radio-renderer.ytd-item-section-renderer, yt-search-no-results-renderer.ytd-item-section-renderer, ytd-video-renderer.ytd-item-section-renderer, ytd-channel-renderer.ytd-item-section-renderer, ytd-promoted-sparkles-text-search-renderer.ytd-item-section-renderer, ytd-web-answer-renderer.ytd-item-section-renderer, ytd-clarification-renderer.ytd-item-section-renderer, ytd-fact-check-renderer.ytd-item-section-renderer, ytd-info-panel-container-renderer.ytd-item-section-renderer {
+  margin-top: 8px;
+  margin-bottom: -4px;
+}
+ytd-video-renderer[is-search] ytd-thumbnail.ytd-radio-renderer {
+  margin-right: 12px;
+  max-width: 140px !important;
+  min-width: 0;
+  margin-bottom: 8px;
+  max-height: 140px !important;
+}
+/* Hide pfp in search and unround TODO: Make var to hide*/
+yt-img-shadow.ytd-video-renderer {
+  display: none;
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+/* unround channel search */
+yt-img-shadow.ytd-channel-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+/* channel size */
+ytd-channel-renderer[use-prominent-thumbs] #avatar-section.ytd-channel-renderer {
+  margin-right: 12px;
+  max-width: 160px;
+  min-width: 160px;
+}
+ytd-video-renderer[is-search] #channel-info.ytd-video-renderer {
+  padding: 0;
+}
+/* title */
+.title-and-badge.ytd-video-renderer {
+  max-width: none;
+  display: contents;
+}
+#channel-name.ytd-video-renderer {
+  padding-left: 0;
+}
+#collapse.ytd-search-sub-menu-renderer {
+  box-shadow: inset 0 5px 5px #dedede;
+}
+/* tries to fix playlist in search */
+ytd-playlist-renderer[is-search] ytd-playlist-thumbnail.ytd-playlist-renderer {
+  margin-right: 16px;
+  max-width: 140px;
+  min-width: 0px;
+}
+/* hide chapters in search (REASON: Messes with the layout)*/
+ytd-expandable-metadata-renderer {
+  display: none;
+}
+#expandable-metadata.ytd-video-renderer:not(:empty) {
+  margin: -12px 0;
+}
+/* remove funraiser icon in search */
+ytd-badge-supported-renderer {
+  display: none;
+}
+/* mixes */
+ytd-thumbnail.ytd-radio-renderer {
+  margin-right: 12px;
+  max-width: 200px;
+  min-width: 200px;
+  margin-bottom: 8px;
+}
+ytd-vertical-list-renderer {
+  padding-bottom: 8px;
+}
+#more.ytd-vertical-list-renderer, #all.ytd-vertical-list-renderer {
+  padding-top: 4px;
+}
+/* text whitespace */
+.grid-subheader.ytd-shelf-renderer {
+  margin-top: 10px;
+  margin-bottom: -14px;
+}
+}
+@-moz-document url-prefix("https://www.youtube.com/results") {
+/* Section 6.1: Search Page (Exclusive) */
+/* input (from search page exclusive) */
+#search-input.ytd-searchbox-spt input {
+  opacity: 100% !important;
+}
+/* remove For You, etc */
+ytd-exploratory-results-renderer.ytd-item-section-renderer, ytd-horizontal-card-list-renderer.ytd-item-section-renderer:not(:first-child), ytd-reel-shelf-renderer.ytd-item-section-renderer, ytd-shelf-renderer.ytd-item-section-renderer {
+  display: hidebadresults;
+}
+/* shadow behind results */
+ytd-item-section-renderer {
+  box-shadow: var(--tubek12-section-box-shadow);
+}
+#header.ytd-browse {
+  background: none;
+}
+/* channels */
+img.yt-img-shadow {
+  max-height: 100px;
+}
+yt-img-shadow.ytd-channel-renderer {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px;
+}
+if hideSidebarSearch {
+#start.ytd-masthead {
+  background: transparent;
+  margin-left: 200px;
+  margin-top: 0;
+  width: 159.5px;
+  transition-delay: reformDelay;
+}
+#logo.ytd-masthead {
+  width: 129px;
+  margin-top: 0px;
+  transition-delay: reformDelay;
+  margin-left: -10px;
+}
+/* 1.3.0: What does this do? to be removed.
+a.yt-simple-endpoint.ytd-button-renderer {
+  color: inherit;
+  border-radius: inherit;
+  text-decoration: none;
+  margin-left: 0;
+  margin-top: 0;
+}
+*/
+#guide-button.ytd-masthead {
+  display: none !important;
+}
+/* hide sidebar both are needed */
+#contentContainer.tp-yt-app-drawer[persistent] {
+  width: 0%;
+  display: none;
+}
+tp-yt-app-drawer.ytd-app[persistent] {
+  display: none;
+}
+/* Margins taken from channel page */
+ytd-app[guide-persistent-and-visible] ytd-page-manager.ytd-app {
+  margin: 0 220px 0 220px !important;
+}
+ytd-two-column-browse-results-renderer.grid:not(.grid-disabled) {
+  max-width: 1040px !important;
+  min-width: 0;
+}
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 6.2: Search Filters */
+/* filters button */
+ytd-toggle-button-renderer #button.ytd-toggle-button-renderer {
+  text-transform: none;
+  font-weight: 500;
+  color: var(--tubek12-normal-text-color);
+}
+/* Filters */
+#filter-group-name.ytd-search-filter-group-renderer {
+  margin: 0;
+  padding: 4px 0 0;
+}
+ytd-search-filter-renderer.ytd-search-filter-group-renderer {
+  padding: 4px 0 0;
+}
+#collapse-content.ytd-search-sub-menu-renderer {
+  margin-bottom: 4px;
+}
+#filter-menu.ytd-search-sub-menu-renderer {
+  border-bottom: 1px solid var(--yt-spec-10-percent-layer);
+  margin-top: 40px;
+}
+/* remove filters animation */
+#collapse.ytd-search-sub-menu-renderer {
+  transition-duration: var(--tubek12-filters-anim-duration);
+}
+}
+
+@-moz-document domain("youtube.com") {
+/* Section 7: Watch Page (All pages) */
+
+#video-title.ytd-compact-video-renderer:hover {
+  text-decoration: underline;
+  color: var(--tubek12-video-title-text-color-hover-alt);
+}
+/* shadow */
+#primary-inner {
+  box-shadow: var(--tubek12-section-box-shadow);
+  padding-top: 8px;
+}
+/* actions */
+ytd-button-renderer.style-text[is-icon-button] #text.ytd-button-renderer, ytd-button-renderer.style-default[is-icon-button] #text.ytd-button-renderer, ytd-button-renderer.style-opacity[is-icon-button] #text.ytd-button-renderer {
+  text-shadow: 0 1px 0 #fff;
+  color: #555;
+  font-size: 12px;
+  font-weight: bold;
+}
+ytd-toggle-button-renderer.style-text[is-icon-button] #text.ytd-toggle-button-renderer {
+  text-shadow: 0 1px 0 #fff;
+  color: #555 !important;
+  font-size: 12px;
+  font-weight: bold;
+}
+ytd-toggle-button-renderer.force-icon-button a.ytd-toggle-button-renderer {
+  padding-right: var(--yt-button-icon-padding,8px);
+  background: linear-gradient(to bottom,#fafafa 0,#dcdcdc 100%);
+  box-shadow: inset 0 0 1px #fff;
+  border-color: #ccc #ccc #aaa !important;
+  border: 1px solid;
+    border-top-color: currentcolor;
+    border-right-color: currentcolor;
+    border-bottom-color: currentcolor;
+    border-left-color: currentcolor;
+  border-radius: 3px;
+  margin-right: -8px;
+    text-shadow: 0 1px 0 #fff;
+  color: #555;
+  font-size: 12px;
+  font-weight: bold;
+}
+ytd-toggle-button-renderer.force-icon-button a.ytd-toggle-button-renderer:hover {
+  border-color: #888 #888 #666 !important;
+}
+ytd-menu-renderer:not([condensed]) .ytd-menu-renderer[button-renderer] + .ytd-menu-renderer[button-renderer], .ytd-menu-renderer[button-renderer] + template.ytd-menu-renderer + #button.ytd-menu-renderer, #flexible-item-buttons.ytd-menu-renderer:not(:empty) > .ytd-menu-renderer[button-renderer], #top-level-buttons-computed.ytd-menu-renderer:not(:empty) + #flexible-item-buttons.ytd-menu-renderer + #button.ytd-menu-renderer:hover {
+  border-color: #888 #888 #666 !important;
+}
+ytd-menu-renderer:not([condensed]) .ytd-menu-renderer[button-renderer] + .ytd-menu-renderer[button-renderer], .ytd-menu-renderer[button-renderer] + template.ytd-menu-renderer + #button.ytd-menu-renderer, #flexible-item-buttons.ytd-menu-renderer:not(:empty) > .ytd-menu-renderer[button-renderer], #top-level-buttons-computed.ytd-menu-renderer:not(:empty) + #flexible-item-buttons.ytd-menu-renderer + #button.ytd-menu-renderer {
+  padding-right: var(--yt-button-icon-padding,8px);
+  background: linear-gradient(to bottom,#fafafa 0,#dcdcdc 100%);
+  box-shadow: inset 0 0 1px #fff;
+  border-color: #ccc #ccc #aaa !important;
+  border: 1px solid;
+    border-top-color: currentcolor;
+    border-right-color: currentcolor;
+    border-bottom-color: currentcolor;
+    border-left-color: currentcolor;
+  border-radius: 3px;
+    text-shadow: 0 1px 0 #fff;
+  color: #555;
+  font-size: 12px;
+  font-weight: bold;
+}
+/* titles after 1.2 */
+h1.ytd-watch-metadata {
+  font-family: arial !important;
+  color: var(--tubek12-normal-text-color);
+}
+/* new fix metadata */
+/* 
+span .style-scope.yt-formatted-string.bold:nth-last-child(7) {
+  margin-left: 900px;
+  position: absolute;
+}
+*/
+#description-and-actions.ytd-watch-metadata {
+  margin-top: -4px;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+}
+ytd-watch-metadata:not([actions-on-separate-line]) #actions.ytd-watch-metadata {
+  justify-content: flex-start;
+}
+#formatted-snippet-text {
+  display: contents;
+}
+/* 1.3.0: Messes up
+#description.ytd-watch-metadata ytd-text-inline-expander.ytd-watch-metadata {
+  max-width: none !important;
+}
+/*
+.style-scope.yt-formatted-string[style-target="bold"] {
+  flex-direction: row;
+  margin-right: -800px !important;
+  margin-left: 800px !important;
+  display: flex !important;
+}
+.style-scope.yt-formatted-string {
+  margin-bottom: 0px !important;
+}
+*/
+/* comment buttons (incomplete)
+#like-button {
+  margin-right: 40px !important;
+  margin-left: -65px !important;
+}
+/* live chat */
+yt-live-chat-header-renderer {
+    /*
+  background: linear-gradient(to top, #202020, #303030, #404040, #505050);
+  */
+  background: var(--tubek12-sidebar-top-bg);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: none;
+}
+ytd-watch-flexy[flexy][js-panel-height_] #chat.ytd-watch-flexy:not([collapsed]).ytd-watch-flexy, ytd-watch-flexy[flexy][js-panel-height_] #chat-container.ytd-watch-flexy:not([chat-collapsed]).ytd-watch-flexy {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border: none;
+}
+/* 1.3.0 causes issues
+yt-dropdown-menu yt-dropdown-menu .yt-dropdown-menu[style-target="label-text"], .yt-dropdown-menu[style-target="label-text"] {
+  color: white;
+}
+/* 1.3.0 causes issues 
+#label-icon.yt-dropdown-menu {
+  color: white;
+}
+/* pfp */
+#author-photo.yt-live-chat-text-message-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+/* background */
+yt-live-chat-item-list-renderer[allow-scroll] #item-scroller.yt-live-chat-item-list-renderer {
+  background: #272727;
+}
+#menu.yt-live-chat-text-message-renderer {
+  color: white;
+  background: none;
+}
+/* author */
+#author-name.yt-live-chat-author-chip {
+  color: #aaa;
+}
+/* text */
+#message.yt-live-chat-text-message-renderer {
+  color: white;
+}
+/* items */
+#items.yt-live-chat-item-list-renderer > .yt-live-chat-item-list-renderer:not(:first-child) {
+  border-top: 1px solid #323232;
+  border-bottom: 1px solid #1b1b1b;
+  background: linear-gradient(to bottom,#292929 0,#252525 100%);
+  border-right: 4px solid transparent;
+  transition: border 0.2s ease;
+}
+#items.yt-live-chat-item-list-renderer > .yt-live-chat-item-list-renderer:not(:first-child):hover {
+  border-right: 4px solid #6a6a6a;
+}
+#items.yt-live-chat-item-list-renderer > .yt-live-chat-item-list-renderer:not(:first-child):active {
+  border-right: 4px solid #c4302b;
+}
+/* input */
+#input-panel.yt-live-chat-renderer:not(:empty) {
+  border-top: var(--yt-live-chat-action-panel-top-border,none);
+  background: #111;
+}
+#label.yt-live-chat-text-input-field-renderer {
+  color: #aaa;
+}
+
+/* paid archive */
+#card.yt-live-chat-paid-message-renderer {
+  border-radius: 0px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 1px 5px 0 rgba(0,0,0,0.12),0 3px 1px -2px rgba(0,0,0,0.2);
+}
+#author-photo.yt-live-chat-paid-message-renderer {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+yt-img-shadow.yt-live-chat-participant-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+#avatar.yt-live-chat-message-input-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+#chat-messages.yt-live-chat-renderer, #contents.yt-live-chat-renderer, #item-list.yt-live-chat-renderer {
+  background: #222;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+#creator-photo.yt-live-chat-banner-poll-renderer {
+  border-radius: var(--tubek12-pfp-border-radius) !important;
+}
+yt-live-chat-message-input-renderer {
+  color: #fff;
+  background: #222;
+}
+#contents.yt-live-chat-app {
+  background: transparent;
+  border: none;
+}
+#count.yt-live-chat-message-input-renderer {
+  color: #fff;
+}
+#container.yt-live-chat-ticker-renderer {
+  background: #558;
+}
+#deleted-state.yt-live-chat-text-message-renderer, #show-original.yt-live-chat-text-message-renderer, yt-live-chat-text-message-renderer[is-deleted] #message.yt-live-chat-text-message-renderer {
+  color: #888;
+}
+
+
+/* failed experiment
+ytd-watch-metadata:not([flex-menu-enabled]) #description-and-actions.ytd-watch-metadata {
+  display: flex;
+  flex-direction: column-reverse;
+}
+*/
+/* Fix the garbage description attempt */
+.style-scope.yt-formatted-string.bold {
+  display: inline-flex;
+  flex-direction: row;
+  margin: 0 2px;
+}
+#snippet.ytd-text-inline-expander {
+  white-space: pre-line;
+  max-height: 7rem !important;
+  overflow: visible !important;
+  mask-image: none !important;
+}
+/* more */
+#expand.ytd-text-inline-expander {
+  position: absolute;
+  bottom: 0;
+  display: contents;
+}
+/*
+.button.ytd-text-inline-expander {
+  margin: 0;
+  min-width: 40px;
+  white-space: pre;
+  text-transform: none;
+  font-family: "Roboto","Arial",sans-serif;
+  font-size: 1.4rem;
+  line-height: 2rem;
+  font-weight: 500;
+  background: #ccc !important;
+  color: #222 !important;
+  align-self: center !important;
+  display: flex;
+  padding: 2px 1px;
+  text-shadow: 0 -1px 1px rgba(0,0,0,.45);
+}
+*/
+/*#expand {
+  margin: 0 !important;
+  background: #ccc !important;
+  color: #222 !important;
+  align-self: center !important;
+  display: flex !important;
+  padding: 2px 220px;
+  text-shadow: 0 -1px 1px rgba(0,0,0,.45);
+}*/
+#expand {
+  margin: 0 !important;
+  background: #ebebeb !important;
+  color: #222 !important;
+  align-self: center !important;
+  display: flex !important;
+  padding: 0 16px;
+  text-shadow: 0 0 0 transparent,0 1px 0 #fff;
+  font-size: 12px;
+  border-radius: 0 0 5px 5px;
+  height: 18px;
+  width: auto;
+  border-width: 0 0 1px !important;
+  box-shadow: 0 1px 0 #fff;
+  border: 1px solid #ccc;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+}
+#expand:hover {
+  margin: 0 !important;
+  background: linear-gradient(to bottom,#fff 0,#e0e0e0 100%) !important;
+  color: #222 !important;
+  align-self: center !important;
+  display: flex !important;
+  padding: 0 16px;
+  text-shadow: 0 0 0 transparent,0 1px 0 #fff;
+  font-size: 12px;
+  border-radius: 0 0 5px 5px;
+  height: 18px;
+  width: auto;
+  border-width: 0 0 1px !important;
+  box-shadow: none;
+  border-color: #aaa #aaa #999;
+}
+.button.ytd-text-inline-expander {
+  background: #ebebeb !important;
+  color: #222 !important;
+  padding: 0 16px;
+  text-shadow: 0 0 0 transparent,0 1px 0 #fff;
+  font-size: 12px;
+  border-radius: 0 0 5px 5px;
+  height: 18px;
+  width: auto;
+  border-width: 0 0 1px !important;
+  box-shadow: 0 1px 0 #fff;
+  border: 1px solid #ccc;
+}
+.button.ytd-text-inline-expander:hover {
+  margin: 0 !important;
+  background: linear-gradient(to bottom,#fff 0,#e0e0e0 100%) !important;
+  color: #222 !important;
+  align-self: center !important;
+  padding: 0 16px;
+  text-shadow: 0 0 0 transparent,0 1px 0 #fff;
+  font-size: 12px;
+  border-radius: 0 0 5px 5px;
+  height: 18px;
+  width: auto;
+  border-width: 0 0 1px !important;
+  box-shadow: none;
+  border-color: #aaa #aaa #999 !important;
+}
+#ellipsis.ytd-text-inline-expander {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+}
+/* from tot */
+a.ytd-rich-metadata-renderer {
+  display: none;
+}
+/* remove chapters in desc to hopefully fix */
+ytd-horizontal-card-list-renderer.ytd-structured-description-content-renderer:not(:first-child), ytd-metadata-row-container-renderer.ytd-structured-description-content-renderer:not(:first-child), ytd-structured-description-content-renderer[inline-structured-description] ytd-horizontal-card-list-renderer.ytd-structured-description-content-renderer, ytd-structured-description-content-renderer[inline-structured-description] ytd-error-corrections-section-renderer.ytd-structured-description-content-renderer {
+  border-top: 6px solid var(--yt-spec-10-percent-layer);
+  box-sizing: border-box;
+  display: none;
+}
+/* buttons when theres too many this fixed it so add vars to above */
+td-menu-renderer:not([condensed]) .ytd-menu-renderer[button-renderer] + .ytd-menu-renderer[button-renderer], .ytd-menu-renderer[button-renderer] + template.ytd-menu-renderer + #button.ytd-menu-renderer, #flexible-item-buttons.ytd-menu-renderer:not(:empty) > .ytd-menu-renderer[button-renderer], #top-level-buttons-computed.ytd-menu-renderer:not(:empty) + #flexible-item-buttons.ytd-menu-renderer + #button.ytd-menu-renderer {
+  margin-left: 0px !important;
+}
+/* Video title (DEPRECATED)*/
+ytd-watch-metadata[smaller-yt-sans-light-title] h1.ytd-watch-metadata {
+  font-family: "Arial" !important;
+  font-size: 1.8333em !important;
+  line-height: 1.1363em !important;
+  max-height: 1.1363em !important;
+  color: var(--tubek12-normal-text-color) !important;
+  /*
+  margin-top: -57%;
+  */
+}
+ytd-video-primary-info-renderer[use-yt-sans20-light] .title.ytd-video-primary-info-renderer {
+  font-family: "Arial" !important;
+  font-size: 1.8333em !important;
+  line-height: 1.1363em !important;
+  max-height: 1.1363em !important;
+  color: var(--tubek12-normal-text-color) !important;
+  font-weight: bold;
+}
+
+/* hide sponsor */
+#sponsor-button.ytd-video-owner-renderer, #purchase-button.ytd-video-owner-renderer, #analytics-button.ytd-video-owner-renderer {
+  display: hideSponsor;
+}
+
+/* hide infinite scrolling attempt 
+ytd-watch-next-secondary-results-renderer {
+  display: contents;
+  flex-direction: column;
+  max-height: fit-content !important;
+}
+*/
+/* hide comment button */
+ytd-comments-entry-point-header-renderer[has-chevron] {
+  display: none;
+}
+/* author area */
+ytd-watch-metadata:not([modern-metapanel]) #owner.ytd-watch-metadata {
+  border: none;
+  border-radius: var(--tubek12-pfp-border-radius);
+  padding: 0 4px 0 12px;
+}
+/* description when expanded background */
+if not darkMode {
+ytd-watch-metadata[top-aligned-actions]:not([description-collapsed]) #description.ytd-watch-metadata {
+  background: #fff;
+  z-index: 1000;
+}
+}
+if darkMode {
+ytd-watch-metadata[top-aligned-actions]:not([description-collapsed]) #description.ytd-watch-metadata {
+  background: #000;
+  z-index: 1000;
+}
+}
+
+/* playlist dark */
+.header.ytd-playlist-panel-renderer {
+  background-color: #111;
+  padding: 8px 8px 8px 8px;
+  flex: none;
+}
+ytd-playlist-panel-renderer[collapsible]:not([modern-panels]) .title.ytd-playlist-panel-renderer {
+  color: white;
+}
+#expand-button.ytd-playlist-panel-renderer {
+  color: white;
+}
+.playlist-items.ytd-playlist-panel-renderer {
+  background-color: #222;
+}
+h4.ytd-playlist-panel-video-renderer {
+  color: white;
+}
+/* unround pfp of creator */
+#avatar.ytd-video-owner-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 7.1: Video player inside (All pages) */
+/* more is needed from wp only. maybe make a seperate section */
+/* hide heat map */
+.ytp-heat-map-container {
+  display: hideHeatMap !important;
+}
+/* old player recreation (1.3.0: needs refining) */
+if oldPlayer {
+
+/* gradient */
+.ytp-larger-tap-buttons .ytp-gradient-bottom {
+  height: 50px !important;
+  padding-top: 0;
+}
+.ytp-gradient-top, .ytp-gradient-bottom {
+  width: 100%;
+  height: 11px !important;
+  background-image: -webkit-linear-gradient(top,#323232 0,#1c1c1c 70%) !important;
+  background-repeat: repeat-x;
+}
+.ytp-big-mode .ytp-gradient-bottom {
+  height: 60px !important;
+  padding-top: 0;
+}
+.ytp-big-mode .ytp-gradient-top {
+  height: 0;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAADGCAYAAAAT+OqFAAAAdklEQVQoz42QQQ7AIAgEF/T/D+kbq/RWAlnQyyazA4aoAB4FsBSA/bFjuF1EOL7VbrIrBuusmrt4ZZORfb6ehbWdnRHEIiITaEUKa5EJqUakRSaEYBJSCY2dEstQY7AuxahwXFrvZmWl2rh4JZ07z9dLtesfNj5q0FU3A5ObbwAAAABJRU5ErkJggg==") !important;
+}
+.ytp-gradient-top, .ytp-chrome-top {
+  display: auto;
+}
+.ytp-chrome-bottom {
+  display: block;
+}
+/* buttons and progress bar */
+.ytp-button:not([aria-disabled="true"]):not([disabled]):not([aria-hidden="true"]) {
+  border-right: 2px solid #1b1b1b;
+  border-left: 2px solid #323232;
+  border-top: 3px solid #323232;
+}
+.ytp-larger-tap-buttons .ytp-chrome-bottom, .ytp-embed-mobile-exp .ytp-chrome-bottom, .ytp-embed-mobile-exp.ytp-small-mode .ytp-chrome-bottom, .ytp-embed-mobile-exp .ytp-chrome-bottom .ytp-chrome-controls, .ytp-embed-mobile-exp.ytp-small-mode .ytp-chrome-bottom .ytp-chrome-controls {
+  height: 48px;
+}
+/* progress bar */
+.ytp-larger-tap-buttons .ytp-progress-bar-container {
+  bottom: 37.5px;
+  height: 15px !important;
+}
+.ytp-progress-list {
+  background: linear-gradient(to bottom,#797979,#656565,#424242) !important;
+  height: 15px !important;
+  border-bottom: 3px solid #1b1b1b;
+}
+.ytp-swatch-background-color {
+  background: linear-gradient(to bottom,#c91919,#a51515,#960202) !important;
+    height: 15px !important;
+}
+.ytp-load-progress {
+  background: linear-gradient(to bottom,#a9a9a9,#959595,#727272) !important;
+    height: 15px !important;
+}
+.ytp-hover-progress-light {
+  background: rgba(255,255,255,.1);
+}
+/* circle */
+.ytp-scrubber-container {
+  top: -6px;
+  background: linear-gradient(to bottom,#fafafa 0,#dcdcdc 100%) !important;
+  border-radius: 24px;
+  height: 26px !important;
+  width: 26px !important;
+  margin-left: -4px !important;
+}
+.ytp-scrubber-button {
+  height: 13px !important;
+  width: 13px !important;
+  border-radius: 24px;
+  margin-top: 6.5px !important;
+  margin-left: 6.5px !important;
+  transition-duration: 0s !important;
+  -webkit-transform: scale(1) !important;
+  transform: scale(1) !important;
+  background: #ccc !important;
+  box-shadow: inset 0px 2px 2px #999 !important;
+}
+.ytp-scrubber-button:hover {
+  background: linear-gradient(to bottom,#c91919,#a51515,#960202) !important;
+  box-shadow: 0px 0px 0px #c00 !important;
+}
+/* volume slider (incomplete)
+.ytp-volume-slider {
+  height: 100%;
+  min-height: 36px;
+  position: relative;
+  overflow: hidden;
+  opacity: 100%;
+}
+.ytp-volume-slider-handle {
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 16px;
+  border-radius: 6px;
+  margin-top: -6px;
+  background: #ccc;;
+}
+.ytp-volume-slider-handle::before {
+  left: -58px;
+  background: #c4302b;
+}
+.ytp-volume-slider-handle::after {
+    left: 6px;
+    background: rgba(20,20,20,0.2);
+}
+*/
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 7.2: Comments (All pages) */
+
+/* all comments count */
+.count-text.ytd-comments-header-renderer {
+  font-family: arial !important;
+  font-size: 13px;
+  line-height: 1.9231em;
+  font-weight: normal;
+  color: #666;
+  padding: 0 3px;
+  margin: 5px 0;
+}
+.count-text.ytd-comments-header-renderer::before {
+  content: "All "
+}
+#title.ytd-comments-header-renderer {
+  margin-bottom: 12px;
+  border-bottom: 1px solid #ccc;
+}
+
+/* time */
+.published-time-text.ytd-comment-renderer {
+  font-family: arial !important;
+  font-size: 11px;
+  line-height: 1.8rem;
+  font-weight: normal;
+}
+
+/* hide author pfp (from all pages) */
+#author-thumbnail.ytd-comment-renderer yt-img-shadow.ytd-comment-renderer {
+  display: hidepfps;
+}
+/* hide comment pfp */
+#avatar.ytd-video-owner-renderer {
+  margin-right: 0px !important;
+  display: hidepfps;
+}
+/* unround comment pfp */
+#author-thumbnail.ytd-comment-renderer yt-img-shadow.ytd-comment-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+/* unround pfp of your comment */
+#author-thumbnail.ytd-comment-simplebox-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+/* comment interaction buttons are right */
+#toolbar.ytd-comment-action-buttons-renderer {
+  flex-direction: row-reverse;
+}
+/* comment layout interior */
+#main.ytd-comment-renderer {
+  display: flex;
+  flex-direction: column-reverse;
+}
+/* like button count */
+#vote-count-middle.ytd-comment-action-buttons-renderer {
+  color: #06c;
+}
+/* author link */
+#author-text.yt-simple-endpoint.ytd-comment-renderer {
+  color: #06c;
+  font-weight: 400;
+  font-size: 12px;
+}
+#author-text.yt-simple-endpoint.ytd-comment-renderer:hover {
+  text-decoration: underline;
+}
+/* comment text */
+#content-text.ytd-comment-renderer {
+  color: var(--tubek12-normal-text-color);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 16px;
+}
+/* comment reposition TODO: Make var */
+ytd-comment-replies-renderer {
+  margin-left: 40px;
+  margin-top: -28px;
+}
+/* comment margin */
+ytd-comment-thread-renderer {
+  margin-bottom: 4px;
+}
+/* show replies */
+#button.ytd-button-renderer yt-icon.ytd-button-renderer + yt-formatted-string.ytd-button-renderer {
+  color: #06c !important;
+}
+#more-replies {
+    margin-left: 800px !important;
+}
+#less-replies {
+    margin-left: 800px !important;
+}
+/* padding for hover thing */
+ytd-comment-renderer {
+  border-radius: 4px;
+  margin-bottom: -4px;
+  padding: 6px;
+  transition-duration: 0.25s;
+}
+/* hover thing */
+if not darkMode {
+ytd-comment-renderer:hover {
+  background: #fff;
+  box-shadow: 1px 1px 1px #bababa;
+  transition-duration: 0s;
+}
+}
+if darkMode {
+ytd-comment-renderer:hover {
+  background: #000;
+  box-shadow: 1px 1px 1px #bababa;
+  transition-duration: 0s;
+}
+}
+/* overall comment section bg */
+ytd-comments {
+/*
+  background: var(--yt-spec-general-background-b) !important;
+  */
+  padding: 1px 16px;
+}
+/* Unround loved pfp (from wp only) */
+#hearted-thumbnail.ytd-creator-heart-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+/* heart */
+#hearted.ytd-creator-heart-renderer {
+  color: #d13d37;
+}
+}
+@-moz-document url-prefix("https://www.youtube.com/watch") {
+/* Section 7.2.1: Comments (WP only) */
+/* pfps. must be wp only. */
+img.yt-img-shadow {
+  min-width: 14px;
+  min-height: 14px;
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 7.3: Comment box (All pages) */
+/* comment box content (from all pages) */
+#contenteditable-root.yt-formatted-string[aria-label].yt-formatted-string:empty::before {
+  content: "Respond to this video";
+}
+/* removes add a comment */
+#simplebox-placeholder.ytd-comment-simplebox-renderer {
+  color: transparent;
+}
+#simplebox-placeholder::before {
+  content: "Respond to this video";
+  color: var(--yt-spec-text-secondary);
+  font-family: arial !important;
+  font-size: 12px;
+  margin: none;
+  font-weight: normal;
+}
+/* your comment when not typing */
+#placeholder-area.ytd-comment-simplebox-renderer {
+  padding-bottom: 14px;
+  border: 1px solid #ccc;
+}
+#simplebox-placeholder.ytd-comment-simplebox-renderer {
+  padding: 4px;
+  display: block;
+}
+/* unround pfp when typing */
+#author-thumbnail.ytd-commentbox, ytd-commentbox[is-reply][is-backstage-comment] #author-thumbnail.ytd-commentbox {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+/* border around your comment when typing */
+.input-content.tp-yt-paper-input-container {
+  border: 1px solid #ccc;
+  padding-bottom: 8px;
+}
+/* padding when typing */
+ytd-commentbox .input-content.tp-yt-paper-input-container > input, ytd-commentbox .input-content.tp-yt-paper-input-container > iron-input, ytd-commentbox .input-content.tp-yt-paper-input-container > textarea, ytd-commentbox .input-content.tp-yt-paper-input-container > iron-autogrow-textarea, ytd-commentbox .input-content.tp-yt-paper-input-container > .paper-input-input {
+  display: block;
+  padding: 4px;
+}
+ytd-commentbox:not([is-backstage-post]) yt-formatted-string#contenteditable-textarea.ytd-commentbox {
+  font-family: arial !important;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: normal;
+}
+/* no underline when typing */
+.underline.tp-yt-paper-input-container {
+  display: none !important;
+}
+/* submit button TODO: complete */
+ytd-button-renderer.style-primary[disabled][is-paper-button] {
+  background-color: #06b;
+  color: white;
+}
+/* no uppercase */
+ytd-button-renderer {
+  text-transform: none;
+}
+/* button size and stuff */
+tp-yt-paper-button.ytd-button-renderer {
+  padding: 7px 10px;
+}
+tp-yt-paper-button.ytd-button-renderer {
+  font-size: 11px;
+}
+}
+@-moz-document url-prefix("https://www.youtube.com/watch") {
+/* Section 7.4: Suggested Videos (WP only) */
+/* titles of recommended videos (originally from wp all pages) */
+#video-title.ytd-compact-video-renderer {
+  font-size: 13px;
+  line-height: 15px;
+  max-height: 30px;
+  font-weight: bold;
+  color: var(--tubek12-normal-text-color);
+  font-family: arial !important;
+}
+/* thumbnails of recomendations (1.3.0:   margin-right: 8px; removed.) */
+ytd-compact-video-renderer:not([watch-feed-big-thumbs]) ytd-thumbnail.ytd-compact-video-renderer {
+  height: 67px;
+  width: 120px;
+}
+/* Sug videos (originally from wp exclusive) 1.3.0:   display: flex; flex-direction: row; removed. */
+#dismissible.ytd-compact-video-renderer {
+  margin-bottom: 6px;
+  padding: 5px;
+  border-radius: 2px;
+  border-bottom: 1px solid transparent;
+  transition-duration: 0.25s;
+}
+if not darkMode {
+#dismissible.ytd-compact-video-renderer:hover {
+  background: #fff;
+  border-bottom: 1px solid #bbb;
+  transition-duration: 0s;
+}
+}
+if darkMode {
+#dismissible.ytd-compact-video-renderer:hover {
+  background: #000;
+  border-bottom: 1px solid #bbb;
+  transition-duration: 0s;
+}
+}
+/* creator name */
+#text.ytd-channel-name {
+  color: #666;
+  font-size: .9166em;
+  height: 1.4em;
+  line-height: 1.4em;
+  font-weight: 400;
+}
+#text.ytd-channel-name::before {
+  content: "by ";
+}
+/* view count */
+ytd-video-meta-block:not([rich-meta]) #metadata-line.ytd-video-meta-block {
+  color: #666;
+  font-size: 1.15em;
+  height: 1.4em;
+  line-height: 1.4em;
+  font-weight: 400;
+}
+}
+@-moz-document url-prefix("https://www.youtube.com/watch") {
+/* Section 7.5 Unrefined: watch page exclusive */
+
+if trueOldWatchPage {
+    /* margin. necessary because we need a consistent size. */
+ytd-watch-flexy[flexy][is-two-columns_][is-extra-wide-video_] #primary.ytd-watch-flexy, ytd-watch-flexy[flexy][is-two-columns_][is-four-three-to-sixteen-nine-video_] #primary.ytd-watch-flexy {
+  max-width: calc(var(--tubek12-screen-width) * 0.46) !important;
+  min-width: 500px !important;/*
+  margin-top: 120px;*/
+}
+.html5-video-player .video-click-tracking, .html5-video-player .video-stream {
+  display: flex !important;
+  width: fit-content;
+  height: fit-content;
+  position: relative;
+  align-self: center !important;
+  margin: auto;
+  left: 0 !important;
+}
+#end.ytd-masthead {
+  margin-right: 180px !important;
+}
+#start.ytd-masthead {
+  margin-left: 138px !important;
+}
+#guide-button.ytd-masthead {
+  display: none !important;
+}
+ytd-watch-flexy[flexy] {
+  --ytd-watch-flexy-width-ratio: 16 !important;
+  --ytd-watch-flexy-height-ratio: 9 !important;
+  --ytd-watch-flexy-min-player-width: calc( var(--ytd-watch-flexy-min-player-height) * 16 / 9 ) !important;
+  --ytd-watch-flexy-max-player-width: calc( ( 100vh - ( var(--ytd-watch-flexy-masthead-height) + var(--ytd-margin-6x) + var(--ytd-watch-flexy-space-below-player) ) ) * 16 / 9) !important;
+  --ytd-watch-flexy-space-below-player: 136px;
+  --ytd-watch-flexy-non-player-height: calc( var(--ytd-watch-flexy-masthead-height) + var(--ytd-margin-6x) + var(--ytd-watch-flexy-space-below-player) );
+  --ytd-watch-flexy-non-player-width: calc( var(--ytd-watch-flexy-sidebar-width) + (3 * var(--ytd-margin-6x)) );
+  --ytd-watch-flexy-min-player-height: 240px !important;
+  --ytd-watch-flexy-min-player-width: calc( var(--ytd-watch-flexy-min-player-height) * (var(--ytd-watch-flexy-width-ratio) / var(--ytd-watch-flexy-height-ratio)) );
+  --ytd-watch-flexy-max-player-height: 400px !important;
+}
+.html5-video-container {
+  z-index: 10;
+  position: relative;
+  display: flex !important;
+  background: black;
+}
+
+.html5-video-player .video-click-tracking, .html5-video-player .video-stream {
+  display: flex !important;
+  height: fit-content;
+  width: var(--ytd-watch-flexy-max-player-width);
+  max-height: var(--ytd-watch-flexy-max-player-height) !important;
+  align-self: center !important;
+}
+.ytp-big-mode, .html5-video-player .video-click-tracking, .html5-video-player .video-stream {
+  display: flex;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  min-height: 100% !important;
+  position: relative;
+  align-self: center !important;
+}
+/* this replaces other one */
+.ytp-chrome-bottom {
+  display: block;
+  width: -moz-available !important;
+  right: 12px;
+}
+/* feeerkkkk 
+.ytp-chapter-hover-container {
+  width: 100% !important;
+}
+*/
+#more-replies {
+  margin-left: 500px !important;
+}
+#less-replies {
+  margin-left: 500px !important;
+}
+}
+/*
+.ytp-progress-list {
+  transform: scaleY(1);
+  height: 10px !important;
+}
+*/
+    /*
+.html5-video-player .video-click-tracking, .html5-video-player .video-stream {
+  display: block;
+  position: absolute;
+  width: inherit !important;
+  height: inherit !important;
+}
+.html5-video-container {
+  z-index: 10;
+  position: relative;
+  width: inherit !important;
+  height: inherit !important;
+}
+#movie_player[aria-label="YouTube Video Player"] {
+  width: 854px !important;
+  height: 480px !important;
+}
+#movie_player[aria-label="YouTube Video Player in Fullscreen"] {
+  width: inherit !important;
+  height: inherit !important;
+}
+#player.ytd-watch-flexy {
+  position: relative;
+  width: 854px !important;
+  height: 480px !important;
+}
+*/
+/* playlist dark (doesn't work properly)
+yt-formatted-string[has-link-only_]:not([force-default-style]) a.yt-simple-endpoint.yt-formatted-string:visited {
+  color: white;
+}
+yt-formatted-string[has-link-only_]:not([force-default-style]) a.yt-simple-endpoint.yt-formatted-string:hover {
+  color: white;
+}
+*/
+/* description fix optional */
+.style-scope.yt-formatted-string {
+  display: descFix;
+}
+/* Make player size consistent (INCOMPLETE) 
+#player.ytd-watch-flexy {
+  position: relative;
+  width: playerWidth !important;
+  height: playerHeight !important;
+}
+ytd-watch-flexy[flexy] #player-container-outer.ytd-watch-flexy {
+  max-width: playerWidth !important;
+  min-width: playerWidth !important;
+  margin: 0 auto;
+}
+ytd-watch-flexy[flexy]:not([is-vertical-video_]) #player-container-inner.ytd-watch-flexy {
+  position: relative;
+  max-width: playerWidth !important;
+  max-height: playerHeight !important;
+  min-width: playerWidth !important;
+  min-height: playerHeight !important;
+}
+ytd-watch-flexy[flexy] #player-container.ytd-watch-flexy {
+  position: absolute;
+  max-width: playerWidth;
+  max-height: playerHeight;
+}
+ytd-watch-flexy[fullscreen] #player-container.ytd-watch-flexy {
+  max-width: none !important;
+  max-height: none !important;
+  min-width: playerWidth !important;
+  min-height: playerHeight !important;
+}
+/*
+ytd-watch-flexy[fullscreen] {
+  --ytd-watch-flexy-masthead-height: 0px;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: /*[[playerWidth]]*//* !important;
+  min-height: /*[[playerHeight]]*//* !important;
+}
+*/
+/*
+.html5-video-player.ytp-fullscreen {
+  width: 100% !important;
+  height: 100% !important;
+}
+.html5-video-player {
+  display: block;
+  min-width: playerWidth !important;
+  min-height: playerHeight !important;
+  position: absolute;
+}
+video {
+  display: block;
+  min-width: playerWidth !important;
+  min-height: playerHeight !important;
+  position: absolute;
+}
+@media only screen and (max-width: 3840px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(3840px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 3072px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(3072px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 2880px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(2880px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 2560px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(2560px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 2400px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(2400px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 2304px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(2304px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 2144px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(2144px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 1920px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(1920px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 1760px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(1760px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 1696px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(1696px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 1600px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(1600px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 1536px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(1536px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 1440px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(1440px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 1408px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(1408px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 1366px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(1366px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 1280px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(1280px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 1152px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(1152px - 5.5%) !important;
+}
+}
+@media only screen and (max-width: 1024px) {
+.ytp-big-mode .ytp-chrome-controls {
+  min-width: calc(1024px - 5.5%) !important;
+}
+}
+.ytp-big-mode .ytp-chrome-controls {
+  max-width: none !important;
+}
+.ytp-progress-bar-container, .ytp-small-mode .ytp-progress-bar-container {
+  width: calc(playerWidth - 2.5%) !important;
+}
+*/
+if not trueOldWatchPage {
+/* margin. necessary because we need a consistent size. */
+ytd-watch-flexy[flexy][is-two-columns_][is-extra-wide-video_] #primary.ytd-watch-flexy, ytd-watch-flexy[flexy][is-two-columns_][is-four-three-to-sixteen-nine-video_] #primary.ytd-watch-flexy {
+  max-width: none !important;/*
+  margin-top: 120px;*/
+}
+}
+/* playlist dark 
+yt-formatted-string[has-link-only_]:not([force-default-style]) a.yt-simple-endpoint.yt-formatted-string:visited {
+  color: white !important;
+}*/
+    #start.ytd-masthead {
+  background: transparent;
+  margin-left: 0;
+  border-top-left-radius: 5px;
+  margin-top: 0;
+  width: 159.5px;
+    transition-delay: reformDelay;
+}
+    #logo.ytd-masthead {
+  width: 129px;
+  margin-top: 0px;
+  margin-left: 5px;
+    transition-delay: reformDelay;
+}
+        a.yt-simple-endpoint.ytd-button-renderer {
+  color: inherit;
+  border-radius: inherit;
+  text-decoration: none;
+  margin-left: 0;
+  margin-top: 0;
+}
+#end.ytd-masthead {
+  margin-right: 0;
+  transition-delay: reformDelay;
+}
+/* infinite scrolling removal attempt
+#ghost-cards.ytd-continuation-item-renderer {
+  width: 100%;
+  display: none;
+}
+tp-yt-paper-spinner {
+  display: none;
+}
+#button.ytd-continuation-item-renderer {
+  width: 100%;
+  display: flex !important;
+  position: sticky;
+  margin-top: 0px !important; 
+}
+#secondary {
+  display: inline-grid;
+  flex-direction: column;
+  max-height: 1850px !important;
+  height: 960px;
+  overflow: hidden;
+}
+#secondary-inner {
+  max-height: 1850px !important;
+  height: 960px;
+    overflow: hidden;
+}
+*/
+ytd-watch-flexy:not([theater]):not([fullscreen]) #primary.ytd-watch-flexy, ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy {
+  padding-top: var(--ytd-margin-6x);
+}
+/* remove mixes watch page */
+#dismissible.ytd-compact-radio-renderer {
+  display: hideMixes;
+}
+/* remove playlists watch page */
+#dismissible.ytd-compact-playlist-renderer {
+  display: hideMixes;
+}
+/* sub button */
+tp-yt-paper-button.ytd-subscribe-button-renderer {
+  background: linear-gradient(to bottom,#fafafa 0,#dcdcdc 100%) !important;
+  border-radius: 2px !important;
+  padding: 3px 24px !important;
+  font-weight: bold;
+  letter-spacing: var(--ytd-tab-system-letter-spacing);
+  text-transform: none;
+  color: #555;
+  margin-top: 0px;
+  text-shadow: 0 1px 0 #fff;
+  box-shadow: inset 0 0 1px #fff;
+  height: 2.95em;
+  font-size: 11px;
+  border: 1px solid #aaa;
+}
+tp-yt-paper-button.ytd-subscribe-button-renderer:hover {
+  background: linear-gradient(to bottom,#fafafa 0,#dcdcdc 100%) !important;
+  border-radius: 2px;
+  padding: 3px 24px;
+  font-weight: bold;
+  letter-spacing: var(--ytd-tab-system-letter-spacing);
+  text-transform: none;
+  color: #555;
+  margin-top: 0px;
+  text-shadow: 0 1px 0 #fff;
+  box-shadow: inset 0 0 1px #fff;
+  border-color: #aaa #aaa #888;
+  height: 2.95em;
+  font-size: 11px;
+  border: 1px solid;
+}
+tp-yt-paper-button.ytd-subscribe-button-renderer:focus {
+  box-shadow: 0 0 5px #4496e7,inset 0 0 10px #fff;
+  border-color: #4496e7;
+  border-radius: 2px;
+  padding: 3px 24px !important;
+  font-weight: bold;
+  letter-spacing: var(--ytd-tab-system-letter-spacing);
+  text-transform: none;
+  color: #555;
+  margin-top: 0px;
+  text-shadow: 0 1px 0 #fff;
+  height: 2.95em;
+  font-size: 11px;
+  border: 1px solid;
+}
+}
+@-moz-document domain("youtube.com") {
+/* Section 8: Subscriptions, Trending, and History (All pages) */
+
+/* subs list mode */
+
+/* unround pfps */
+#avatar.ytd-shelf-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+.grid-subheader.ytd-shelf-renderer {
+  margin-top: 14px;
+  margin-bottom: -21px;
+}
+ytd-expanded-shelf-contents-renderer {
+  display: block;
+  margin-bottom: 0;
+}
+/* thumbnail sizes */
+ytd-video-renderer:not([is-search]) ytd-thumbnail.ytd-video-renderer {
+  flex: none;
+  width: 178px;
+  height: 100px;
+  margin-right: 8px;
+}
+/* subs thumbnails (from unsorted) (1.3.0: above code seems to do this. to be removed.) 
+ytd-thumbnail.ytd-grid-video-renderer {
+  height: 110px;
+  width: 196px;
+}
+*/
+/* history (from feed page only, keep an eye on) */
+if historyPage {
+/* history secondary */
+ytd-two-column-browse-results-renderer[page-subtype="history"] #secondary.ytd-two-column-browse-results-renderer {
+  position: absolute;
+  margin-right: 250px;
+  height: 128px;
+  width: calc(100% - 700px);
+  display: flex;
+  flex-wrap: revert;
+}
+#options {
+  display: flex;
+  flex-direction: row;
+  width: 270px;
+}
+/* primary */
+@media only screen and (min-width: 1500px) {
+ytd-two-column-browse-results-renderer[page-subtype="history"][has-secondary-column-data] #primary.ytd-two-column-browse-results-renderer {
+  padding-right: 0;
+  margin-top: 110px;
+  margin-left: 12px;
+}
+}
+@media only screen and (max-width: 1500px) {
+ytd-two-column-browse-results-renderer[page-subtype="history"][has-secondary-column-data] #primary.ytd-two-column-browse-results-renderer {
+  padding-right: 0;
+  margin-top: 110px;
+  margin-left:  calc(100% - 750px);
+}
+}
+/* inner */
+#contents.ytd-browse-feed-actions-renderer {
+  display: flex;
+  flex-direction: row;
+  width: 810px;
+  flex-wrap: wrap;
+}
+ytd-sub-feed-selector-renderer {
+  display: none;
+}
+ytd-two-column-browse-results-renderer[page-subtype="history"] ytd-browse-feed-actions-renderer.ytd-two-column-browse-results-renderer {
+  padding: 0 8px;
+}
+/* buttons */
+#contents.ytd-browse-feed-actions-renderer > ytd-button-renderer.ytd-browse-feed-actions-renderer, #contents.ytd-browse-feed-actions-renderer > yt-button-renderer.ytd-browse-feed-actions-renderer, #contents.ytd-browse-feed-actions-renderer > ytd-toggle-button-renderer.ytd-browse-feed-actions-renderer {
+  margin: 16px -6px 0 -6px;
+}
+}
+}
+
+@-moz-document url-prefix("https://www.youtube.com/c"), url-prefix("https://www.youtube.com/u") {
+/* Section 9: Channel Pages Exclusive */
+if channelList {
+/* channel page list view */
+#items.yt-horizontal-list-renderer > .yt-horizontal-list-renderer {
+  display: block;
+}
+.ytd-shelf-renderer ytd-thumbnail.ytd-grid-video-renderer {
+  height: 147px !important;
+  width: 262px !important;
+}
+/* duplicate please delete */
+.ytd-shelf-renderer ytd-thumbnail #thumbnail.ytd-thumbnail {
+  height: 147px;
+  width: 262px;
+}
+.ytd-shelf-renderer ytd-thumbnail #thumbnail.ytd-thumbnail yt-img-shadow.ytd-thumbnail {
+  width: 262px;
+  height: 147px;
+}
+.icon-container #img {
+  width: 24px;
+}
+#img {
+  width: 262px;
+}
+.ytd-shelf-renderer #primary-links.ytd-c4-tabbed-header-renderer yt-img-shadow.ytd-c4-tabbed-header-renderer {
+  padding-right: 5px;
+  width: 24px;
+  height: 24px;
+}
+.ytd-shelf-renderer #details.ytd-grid-video-renderer {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+}
+if not darkMode {
+.ytd-shelf-renderer #details {
+  background: #fff;
+  display: -webkit-box;
+  padding: 41px 12px 53px 12px;
+  margin-left: 262px !important;
+  margin-top: -148px !important;
+  margin-bottom: 10px !important;
+  margin-right: -790px;
+  max-height: 147px;
+  border-radius: 0 3px 3px 0;
+}
+.ytd-shelf-renderer #details:hover {
+  box-shadow: 0 1px 3px rgba(0,0,0,.5),inset 0 -1px 0 #fff;
+  background: linear-gradient(to bottom,#fff 0,#f0f0f0 100%);
+}
+/* titles */
+.ytd-shelf-renderer ytd-grid-video-renderer #video-title.yt-simple-endpoint.ytd-grid-video-renderer {
+  font-family: arial !important;
+  font-size: 16px;
+  line-height: 18px;
+  font-weight: normal;
+  color: var(--tubek12-normal-text-color);
+}
+.ytd-shelf-renderer ytd-grid-video-renderer #video-title.yt-simple-endpoint.ytd-grid-video-renderer:hover {
+  text-decoration: underline;
+  color: var(--tubek12-video-title-text-color-hover);
+}
+}
+if darkMode {
+.ytd-shelf-renderer #details {
+  background: #000;
+  display: -webkit-box;
+  padding: 41px 12px 53px 12px;
+  margin-left: 262px !important;
+  margin-top: -148px !important;
+  margin-bottom: 10px !important;
+  margin-right: -790px;
+  max-height: 147px;
+  border-radius: 0 3px 3px 0;
+}
+.ytd-shelf-renderer #details:hover {
+  box-shadow: 0 1px 3px rgba(0,0,0,.5),inset 0 -1px 0 #fff;
+  background: linear-gradient(to bottom,#101010 0,#000 100%);
+}
+/* titles */
+.ytd-shelf-renderer ytd-grid-video-renderer #video-title.yt-simple-endpoint.ytd-grid-video-renderer {
+  font-family: arial !important;
+  font-size: 16px;
+  line-height: 18px;
+  font-weight: normal;
+  color: #ccc;
+}
+}
+/* arrows */
+yt-horizontal-list-renderer[at-end] #right-arrow.yt-horizontal-list-renderer .arrow.yt-horizontal-list-renderer {
+  display: block !important;
+  opacity: 0;
+}
+ytd-button-renderer[is-icon-button][has-no-text] {
+  font-size: 18px !important;
+}
+}
+/* bg 
+ytd-browse[page-subtype~="channels"] ytd-two-column-browse-results-renderer.ytd-browse {
+  min-height: calc(100vh - 56px - 48px - 16px);
+  background: #eee;
+}
+*/
+/* channel name */
+ytd-grid-video-renderer.grid #metadata.ytd-grid-video-renderer, ytd-grid-video-renderer.compact #metadata.ytd-grid-video-renderer, .ytd-grid-video-renderer[meta-block].grid.ytd-grid-video-renderer #metadata.ytd-grid-video-renderer, .ytd-grid-video-renderer[meta-block].compact.ytd-grid-video-renderer #metadata.ytd-grid-video-renderer {
+  display: flex;
+  flex-direction: row;
+}
+/* metadata */
+ytd-grid-video-renderer:not([rich-meta]) #metadata-line.ytd-grid-video-renderer {
+  font-family: arial !important;
+  font-size: 11px;
+  font-weight: normal;
+}
+ytd-grid-video-renderer:not([rich-meta]) #byline-container.ytd-grid-video-renderer {
+  font-family: arial !important;
+  font-size: 11px;
+  line-height: 1.8rem;
+  font-weight: normal;
+  color: #999;
+  margin-right: 8px;
+}
+
+/* rounded header thing remove on channels */
+#header.ytd-browse {
+  background: transparent;
+}
+
+/* test banner */
+.banner-visible-area.ytd-c4-tabbed-header-renderer {
+  height: 210px !important;
+  position: relative;
+}
+/* channel bg color */
+ytd-browse[page-subtype="channels"] {
+  background: none;
+}
+/* unround pfp */
+/* TEMP MITIGATION */
+/* content anim TODO: add var TODO: add media queries */
+#page-manager.ytd-app {
+  margin-top: 0px !important;
+        transition-duration: formatAnim !important;
+  transition-timing-function: cubic-bezier(.65,.05,.22,.85);
+}
+#contentContainer.tp-yt-app-header {
+  position: relative;
+  margin-top: 200px;
+}
+#primary.ytd-two-column-browse-results-renderer {
+  margin-top:  channelMitigate !important;
+        transition-duration: formatAnim !important;
+  transition-timing-function: cubic-bezier(.65,.05,.22,.85);
+}
+@media only screen and (max-width: 6000px) {
+#page-manager.ytd-app {
+  margin-top: 0px !important;
+}
+#contentContainer.tp-yt-app-header {
+  position: relative;
+  margin-top: 200px !important;
+}
+#primary.ytd-two-column-browse-results-renderer {
+  margin-top:  calc(channelMitigate + 20%) !important;
+}
+}
+@media only screen and (max-width: 3000px) {
+#page-manager.ytd-app {
+  margin-top: 0px !important;
+}
+#contentContainer.tp-yt-app-header {
+  position: relative;
+  margin-top: 200px !important;
+}
+#primary.ytd-two-column-browse-results-renderer {
+  margin-top:  calc(channelMitigate + 10%) !important;
+}
+}
+@media only screen and (max-width: 2000px) {
+#page-manager.ytd-app {
+  margin-top: 0px !important;
+}
+#contentContainer.tp-yt-app-header {
+  position: relative;
+  margin-top: 200px !important;
+}
+#primary.ytd-two-column-browse-results-renderer {
+  margin-top:  calc(channelMitigate + 4%) !important;
+}
+}
+@media only screen and (max-width: 1700px) {
+#page-manager.ytd-app {
+  margin-top: 0px !important;
+}
+#contentContainer.tp-yt-app-header {
+  position: relative;
+  margin-top: 200px !important;
+}
+#primary.ytd-two-column-browse-results-renderer {
+  margin-top: channelMitigate !important;
+}
+}
+#channel-container.ytd-c4-tabbed-header-renderer {
+  position: relative;
+  display: flex;
+  margin-top: -32px;
+}
+/* from watch page hide */    
+#start.ytd-masthead {
+  background: transparent;
+  margin-left: 200px;
+  border-top-left-radius: 5px;
+  margin-top: 0;
+  width: 159.5px;
+  transition-delay: reformDelay;
+}
+    #logo.ytd-masthead {
+  width: 129px;
+  margin-top: 0px;
+  transition-delay: reformDelay;
+  margin-left: 0px;
+}
+        a.yt-simple-endpoint.ytd-button-renderer {
+  color: inherit;
+  border-radius: inherit;
+  text-decoration: none;
+  margin-left: 0;
+  margin-top: 0;
+}
+#guide-button.ytd-masthead {
+  display: none !important;
+}
+    /* hide sidebar */
+    #contentContainer.tp-yt-app-drawer[persistent] {
+  width: 0%;
+  display: none;
+}
+tp-yt-app-drawer.ytd-app[persistent] {
+  display: none;
+}
+/* margins general DO NOT DELETE OR SET TO UNIVERSAL */
+ytd-app[guide-persistent-and-visible] ytd-page-manager.ytd-app {
+  margin: 0 250px 0 250px !important;
+}
+ytd-two-column-browse-results-renderer.grid:not(.grid-disabled) {
+  max-width: 1040px !important;
+  min-width: 0;
+}
+/* channel top bg */
+#channel-header.ytd-c4-tabbed-header-renderer {
+  background-image: linear-gradient(to top, #202020, #303030, #404040, #505050);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+/* PFP */
+#avatar.ytd-c4-tabbed-header-renderer {
+  width: 55px;
+  height: 55px;
+  margin: -8px 24px 4px 0;
+}
+/* name */
+#channel-name.ytd-c4-tabbed-header-renderer {
+  color: #fff;
+  font-size: 24px;
+}
+/* sub count */
+#subscriber-count.ytd-c4-tabbed-header-renderer {
+  display: flex;
+  flex-direction: row-reverse;
+  margin-top: -28px;
+  color: #999;
+  margin-right: 200px;
+}
+/* both */
+#meta.ytd-c4-tabbed-header-renderer {
+  min-width: 150px;
+  margin-top: -10px;
+  max-height: 9rem;
+  overflow: hidden;
+  min-height: 3rem;
+}
+/* view coint (WIP) */
+#right-column.ytd-channel-about-metadata-renderer > yt-formatted-string.ytd-channel-about-metadata-renderer {
+  border-bottom: 1px solid var(--yt-spec-10-percent-layer);
+  display: block;
+  padding: 12px 0;
+  margin-top: -122px;
+  z-index: 100000000;
+  position: relative;
+  color: #999;
+  margin-left: 160px;
+}
+/* sub button WIP */
+#buttons.ytd-c4-tabbed-header-renderer {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  margin-left: 280px;
+}
+/* remove channel backgrounds */
+ytd-c4-tabbed-header-renderer[has-channel-art][guide-persistent-and-visible] .banner-visible-area.ytd-c4-tabbed-header-renderer {
+  display: channelBGHide !important;
+}
+/*
+#channel-container.ytd-c4-tabbed-header-renderer, #tabs-container.ytd-c4-tabbed-header-renderer {
+  background-color: #ECECEC !important;
+}
+*/
+#channel-container.ytd-c4-tabbed-header-renderer, #tabs-container.ytd-c4-tabbed-header-renderer {
+  background-color: transparent;
+}
+    /* search on channel */
+.input-content.tp-yt-paper-input-container {
+  border: none;
+}
+.input-wrapper.tp-yt-paper-input-container {
+  position: relative;
+  border: none;
+  padding-bottom: 8px;
+  box-shadow: inset 0px 2px 3px #151515;
+  height: 15px;
+  font-size: 12px;
+  border-radius: 3px;
+  border-bottom: 1px solid #626262;
+  width: 260px;
+  padding: 4px 0 4px 10px;
+}
+/* search text */
+tp-yt-paper-input.ytd-expandable-tab-renderer .input-content.tp-yt-paper-input-container > input, tp-yt-paper-input.ytd-expandable-tab-renderer .input-content.tp-yt-paper-input-container > iron-input, tp-yt-paper-input.ytd-expandable-tab-renderer .input-content.tp-yt-paper-input-container > textarea, tp-yt-paper-input.ytd-expandable-tab-renderer .input-content.tp-yt-paper-input-container > iron-autogrow-textarea, tp-yt-paper-input.ytd-expandable-tab-renderer .input-content.tp-yt-paper-input-container > .paper-input-input {
+  height: 15px;
+  font-size: 12px;
+  margin-top: 4px;
+  color: #ccc;
+}
+tp-yt-paper-input.ytd-expandable-tab-renderer #labelAndInputContainer.tp-yt-paper-input-container > label, tp-yt-paper-input.ytd-expandable-tab-renderer #labelAndInputContainer.tp-yt-paper-input-container > .paper-input-label {
+  height: 15px;
+  font-size: 12px;
+  margin-top: 4px;
+  color: #888;
+}
+/* play all */
+#play-button {
+border: 3px solid #fff;
+font-size: 11px;
+box-shadow: 0 2px 1px #ddd;
+text-shadow: 0 -1px 1px #000;
+border-radius: 20px;
+background: linear-gradient(to bottom,#343436 0,#1b1b1b 100%);
+height: 24px;
+padding-bottom: 10px;
+}
+#play-button:hover {
+background: linear-gradient(to bottom,#777 0,#111 100%);
+}
+#button.ytd-button-renderer yt-icon.ytd-button-renderer + yt-formatted-string.ytd-button-renderer {
+  margin-left: var(--yt-string-icon-padding,8px);
+  margin-top: -1px !important;
+  color: #fff !important;
+}
+}
+
+@-moz-document domain("youtube.com") {
+/* Section 10: For channel pages but applies to all pages */
+
+/* pfp on friends */
+yt-img-shadow.ytd-grid-channel-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+/* hide sponsor and join button */
+#sponsor-button.ytd-c4-tabbed-header-renderer {
+  display: hideSponsor;
+}
+/* channel bar thing */
+#wrapper.tp-yt-app-header-layout > [slot="header"] {
+  display: contents;
+}
+tp-yt-app-header-layout {
+/*  position: auto; */
+  z-index: 99999999999;
+  margin-top: -150px;
+}
+ytd-grid-renderer {
+  z-index: 2000;
+  position: relative;
+}
+/* tabs + BG */
+/*
+@media only screen and (min-width: 2150px) {
+#tabsContainer.tp-yt-paper-tabs {
+  margin-left: 44px !important;
+  height: 32px !important;
+  margin-top: -20px;
+}
+}*/
+@media only screen and (max-width: 6000px) {
+#tabsContainer.tp-yt-paper-tabs {
+  margin-left: 0px !important;
+    margin-top: -20px !important;
+}
+ytd-c4-tabbed-header-renderer.grid-6-columns tp-yt-paper-tabs.ytd-c4-tabbed-header-renderer {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+}
+@media only screen and (max-width: 1920px) {
+#tabsContainer.tp-yt-paper-tabs {
+  margin-left: 0px !important;
+    margin-top: -20px !important;
+}
+ytd-c4-tabbed-header-renderer.grid-6-columns tp-yt-paper-tabs.ytd-c4-tabbed-header-renderer {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+}
+@media only screen and (max-width: 1800px) {
+#tabsContainer.tp-yt-paper-tabs {
+  margin-left: 0 !important;
+    margin-top: -20px !important;
+}
+}
+@media only screen and (max-width: 1600px) {
+#tabsContainer.tp-yt-paper-tabs {
+  margin-left: 0px !important;
+    margin-top: 0px !important;
+}
+}
+@media only screen and (max-width: 1500px) {
+#tabsContainer.tp-yt-paper-tabs {
+  margin-left: 0px !important;
+    margin-top: 0px !important;
+}
+}
+#tabsContainer.tp-yt-paper-tabs {
+  margin-left: 20px;
+  position: relative;
+  height: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  -ms-flex: 1 1 auto;
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  box-shadow: inset 0 1px 2px rgb(34,34,34);
+    height: 32px !important;
+  background: -webkit-linear-gradient(bottom,#323232 0,#4f4f4f 70%);
+}
+ytd-c4-tabbed-header-renderer.grid-5-columns tp-yt-paper-tabs.ytd-c4-tabbed-header-renderer {
+  background: -webkit-linear-gradient(bottom,#323232 0,#4f4f4f 70%);
+  height: 32px !important;
+      margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+tp-yt-paper-tab.iron-selected.ytd-c4-tabbed-header-renderer {
+  color: #fff;
+  background: -webkit-linear-gradient(top,#323232 0,#1c1c1c 70%) !important;
+  box-shadow: 1px 0 15px #232323 !important;
+  text-transform: none;
+  border-top: 1px solid #555;
+  font-weight: 400;
+}
+tp-yt-paper-tab:not(.iron-selected) .tp-yt-paper-tab[style-target="tab-content"] {
+  opacity: 1;
+  text-transform: none;
+  color: #fff;
+  font-weight: 400;
+}
+#tabsContent.tp-yt-paper-tabs > :not(#selectionBar) {
+  height: 99.5%;
+  max-width: 38%;
+  margin-top: 0.1%;
+}
+#tabsContent.tp-yt-paper-tabs > :not(#selectionBar):hover {
+  height: 99.5%;
+  max-width: 38%;
+  margin-top: 0.1%;
+  background: -webkit-gradient(linear,left bottom,left top,color-stop(0,#3a3a3a),color-stop(0.7,#555));
+  box-shadow: 0 1px 2px rgb(34,34,34);
+}
+tp-yt-paper-tab.ytd-c4-tabbed-header-renderer {
+  padding: 0 16px;
+}
+tp-yt-paper-tab tp-yt-paper-tab .tp-yt-paper-tab[style-target="tab-content"], .tp-yt-paper-tab[style-target="tab-content"] {
+  height: 40%;
+  font-size: 1.2rem;
+}
+#avatar.ytd-c4-tabbed-header-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+  margin-left: 8px;
+}
+yt-img-shadow.ytd-channel-avatar-editor {
+  width: 55px;
+  height: 55px;
+  border-radius: var(--tubek12-pfp-border-radius);
+  margin-left: 8px;
+}
+/* remove tab bar */
+ytd-c4-tabbed-header-renderer tp-yt-paper-tabs .tp-yt-paper-tabs[style-target="selection-bar"] {
+  border-bottom-width: 3px;
+  display: none;
+}
+/* anim TODO: add var */
+#primary.ytd-two-column-browse-results-renderer {
+  margin-top: 0;
+  transition-duration: 0s;
+}
+#page-manager.ytd-app {
+  transition-duration: 0s;
+}
+/* unround community pfps */
+#author-thumbnail.ytd-backstage-post-renderer yt-img-shadow.ytd-backstage-post-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+/* bg 
+ytd-backstage-post-thread-renderer {
+  background: linear-gradient(to top, #ccc,#ddd);
+}
+/* lesser vote */
+.progress-bar.ytd-backstage-poll-renderer {
+  background: var(--tubek12-realityshade-red-banner);
+}
+/* greater vote */
+tp-yt-paper-item.ytd-backstage-poll-renderer[selected] .progress-bar.ytd-backstage-poll-renderer {
+  background: var(--tubek12-realityshade-blue-banner);
+}
+/* greater vote */
+tp-yt-paper-item.ytd-backstage-poll-renderer[selected] .progress-bar.ytd-backstage-poll-renderer {
+  background: linear-gradient(to bottom,#445fd2 0,#2643b3 100%) !important;
+}
+.text-area.ytd-backstage-poll-renderer {
+  color: #fff;
+  position: absolute;
+  z-index: 1;
+  display: inline-flex;
+  justify-content: space-between;
+}
+.choice-text.ytd-backstage-poll-renderer {
+  margin: 0 12px;
+}
+.vote-percentage.ytd-backstage-poll-renderer, .choice-text.ytd-backstage-poll-renderer {
+  z-index: 1;
+  font-family: "Roboto","Arial",sans-serif;
+  font-size: 1.6rem;
+  line-height: 2.2rem;
+  font-weight: bold;
+  text-shadow: 0 0 2px rgba(0,0,0,.3);
+  font-size: 13px;
+}
+ytd-backstage-poll-renderer:not([is-image-poll]) tp-yt-paper-item.ytd-backstage-poll-renderer[show-percentage] .choice-info.ytd-backstage-poll-renderer {
+  border: none;
+  background: linear-gradient(to top, #202020, #303030, #404040, #505050);
+}
+ytd-backstage-poll-renderer:not([is-image-poll]) .choice-info.ytd-backstage-poll-renderer {
+  border: none;
+  background: linear-gradient(to top, #202020, #303030, #404040, #505050);
+}
+}
+
+@-moz-document domain("youtube.com") {
+/* Section 11: Animations */
+/* for home */
+ytd-rich-grid-renderer {
+  animation-name: homefadein;
+  animation-duration: 1s;
+  animation-iteration-count: 1;
+}
+@keyframes homefadein {
+  0%   {opacity: 0%;}
+  100%   {opacity: 100%;}
+}
+}
+@-moz-document domain("youtube.com") {
+/* unsorted */
+
+/*
+@keyframes exp {
+  0%   {transform: scale(0, 0.01);}
+  0%   {margin-top: -30px;}
+  40%   {transform: scale(1, 0.01);}
+  60%   {margin-top: -30px;}
+  60%   {transform: scale(1, 0.01);}
+  100%   {transform: scale(1, 1);}
+  100%   {margin-top: 0px;}
+}
+/* experi 
+.ytd-page-manager {
+  animation-iteration-count: 1 !important;
+  animation-name: exp !important;
+  animation-duration: 0.05s !important;
+}
+ytd-rich-item-renderer {
+  animation-iteration-count: 1 !important;
+  animation-name: exp !important;
+  animation-duration: 1s !important;
+  animation-delay: 0s;
+}
+#player.ytd-watch-flexy {
+  animation-iteration-count: 1 !important;
+  animation-name: exp !important;
+  animation-duration: 1s !important;
+  animation-delay: 0s;
+}
+/* settings menu
+ytd-settings-sidebar-renderer {
+  margin-left: 250px;
+  width: 220px;
+}*/
+
+/* hide movies watch page */
+#dismissible.ytd-compact-movie-renderer {
+  display: hideMovies;
+  flex-direction: row;
+}
+ytd-radio-renderer {
+  display: hideMixes;
+}
+/* time status renderer */
+ytd-thumbnail-overlay-time-status-renderer {
+  margin: 2px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: var(--yt-badge-letter-spacing,unset);
+  letter-spacing: 0.01px;
+}
+/* Playlist page */
+ytd-browse[guide-persistent-and-visible] ytd-playlist-sidebar-renderer.ytd-browse, ytd-browse[guide-persistent-and-visible] ytd-playlist-sidebar-amsterdam-renderer.ytd-browse {
+  left: 0;
+  top: 30px;
+}
+ytd-playlist-sidebar-amsterdam-renderer.ytd-browse, ytd-playlist-sidebar-renderer.ytd-browse, ytd-settings-sidebar-renderer.ytd-browse {
+  position: absolute;
+  left: 0;
+  height: calc(100vh - var(--ytd-toolbar-height));
+}
+/* sub button */
+tp-yt-paper-button.ytd-subscribe-button-renderer {
+  background: linear-gradient(to bottom,#fff 0,#e0e0e0 100%) !important;
+  --paper-button-flat-keyboard-focus-background-color: var(--yt-spec-brand-button-background);
+  border-radius: 24px 6px 6px 24px;
+  padding: 5px 24px;
+  --paper-button-flat-keyboard-focus-background-color: var(--yt-spec-brand-button-background);
+  color: var(--yt-spec-static-brand-white);
+  white-space: nowrap;
+  font-size: 1.1rem;
+  font-weight: var(--ytd-tab-system-font-weight);
+  letter-spacing: var(--ytd-tab-system-letter-spacing);
+  text-transform: none;
+    color: #444;
+    margin-top: 0px;
+}
+tp-yt-paper-button.ytd-subscribe-button-renderer:hover {
+  --paper-button-flat-keyboard-focus-background-color: var(--yt-spec-brand-button-background);
+  border: none;
+    color: #fff;
+    background: linear-gradient(to bottom,#75be65 0,#37622d 100%) !important;
+}
+
+tp-yt-paper-button.ytd-subscribe-button-renderer[subscribed] {
+  color: #444;
+}
+
+/* sub menu manage buttons */
+a.yt-simple-endpoint.ytd-button-renderer {
+  color: inherit;
+  border-radius: inherit;
+  text-decoration: none;
+  margin-left: 0 !important;
+  margin-top: 0 !important;
+}
+/* unavaliable vids */
+ytd-alert-with-button-renderer[type="INFO"], ytd-alert-with-button-renderer[type="SUCCESS"] {
+  background-image: var(--tubek12-realityshade-red-banner);
+  height: 22px;
+  margin-top: 20px;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.5),inset 0 0 1px rgba(0,0,0,.2) !important;
+}
+ytd-alert-with-button-renderer[type="INFO"]::before {
+  content: "";
+  background-image: url("https://s.ytimg.com/yt/imgbin/www-refresh-vflMLqC23.png");
+  display: block;
+  width: 33px;
+  height: 29px;
+  position: absolute;
+  font-size: 33px;
+  margin-left: -17px;
+  margin-top: -9px;
+  background-position: 0px -52px !important;
+}
+#text.ytd-alert-with-button-renderer {
+  color: #fff;
+  text-shadow: 0 -1px 1px rgba(0,0,0,.45);
+  font-size: 13px;
+  font-weight: bold;
+  margin-left: 28px;
+}
+.style-scope.ytd-alert-with-button-renderer.style-default.size-default {
+  background-image: url("https://s.ytimg.com/yt/imgbin/www-refresh-vflMLqC23.png");
+  display: block;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  font-size: 33px;
+  margin-left: -17px;
+  margin-top: -3px;
+  background-position: -280px -161px !important;
+  color: transparent;
+}
+ytd-message-renderer {
+  background-image: var(--tubek12-realityshade-red-banner);
+  border-radius: 3px;  
+}
+#message.ytd-message-renderer {
+  color: #fff;
+  text-shadow: 0 -1px 1px rgba(0,0,0,.45);
+  font-size: 13px;
+  font-weight: bold;
+}
+/* subs menu */
+ytd-two-column-browse-results-renderer.grid:not(.grid-disabled) {
+  max-width: 820px;
+  min-width: 820px;
+}
+}
+
+@-moz-document url-prefix("https://www.youtube.com/playlist") {
+    /* playlist page exclusive *//*
+ytd-playlist-sidebar-secondary-info-renderer {
+  display: block;
+  padding: 16px 0;
+  margin-top: -162px;
+  position: absolute;
+  z-index: 888888888;
+}
+#menu.ytd-playlist-sidebar-primary-info-renderer {
+  margin-top: 24px;
+  margin-bottom: 8px;
+  margin-left: -8px;
+}
+#owner-container.ytd-playlist-sidebar-secondary-info-renderer {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+#owner-container.ytd-playlist-sidebar-secondary-info-renderer {
+  margin-top: -94px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  z-index: 9999999;
+  position: relative;
+}
+#header.ytd-browse {
+  background: #2b2b2b;
+  height: 100px;
+  background-image: linear-gradient(to top, #202020, #303030, #404040, #505050);
+}
+*/
+yt-formatted-string[has-link-only_]:not([force-default-style]) a.yt-simple-endpoint.yt-formatted-string {
+  color: #888 !important;
+  margin-left: 0px;
+  /*
+  min-width: 400px;  
+  */
+}
+/*
+
+#title.ytd-playlist-sidebar-primary-info-renderer {
+  display: block;
+  margin-top: -86px;
+  color: white !important;
+  word-break: break-word;
+  overflow: hidden;
+  font-family: "Roboto","Arial",sans-serif;
+  font-size: 18px;
+  line-height: 2rem;
+  font-weight: 400;
+  z-index: 77777777777;
+  position: absolute;
+}
+ytd-expander[should-use-number-of-lines][collapsed] > #content.ytd-expander {
+  color: var(--yt-spec-text-primary);
+  display: inline;
+  overflow: hidden;
+  max-height: none;
+  position: relative;
+}
+/* videos themselves position
+ytd-browse[page-subtype="playlist"][has-sidebar_] ytd-two-column-browse-results-renderer.ytd-browse, ytd-browse[page-subtype="show"][has-sidebar_] ytd-two-column-browse-results-renderer.ytd-browse {
+  padding-left: 0;
+  margin-top: 100px;
+}
+/*
+ytd-playlist-thumbnail {
+  width: 160px;
+  height: 90px;
+  margin-top: -34px;
+  z-index: 983760126;
+}
+ytd-browse[guide-persistent-and-visible] ytd-playlist-sidebar-renderer.ytd-browse, ytd-browse[guide-persistent-and-visible] ytd-playlist-sidebar-amsterdam-renderer.ytd-browse {
+  left: 0;
+  top: 16px;
+  width: 100%;
+  background: none;
+}
+ytd-playlist-video-list-renderer {
+  margin-top: 80px;
+  background: var(--yt-spec-general-background-a);
+  padding: 4px;
+  z-index: 888272723827;
+  position: relative;
+}
+/* video channel name */
+#text.complex-string.ytd-channel-name {
+  margin-left: /*was -200px */0px;
+}
+/* index number */
+#index-container.ytd-playlist-video-renderer {
+  position: absolute;
+  z-index: 928;
+  margin-left: -6px;
+  margin-top: 6px;
+}
+#index.ytd-playlist-video-renderer {
+  color: #fff;
+  font-family: arial;
+  font-size: 20px;
+  line-height: 2rem;
+  font-weight: 400;
+  text-shadow: 0 0 3px rgba(0,0,0,.5);
+}
+/* video title */
+#video-title.ytd-playlist-video-renderer {
+/*
+  margin-top: 8px;
+*/
+  margin-bottom: 0;
+  font-size: 14px;
+  line-height: 2.2rem;
+  font-weight: 400;
+  color: #555;
+}
+#video-title.ytd-playlist-video-renderer:hover {
+  text-decoration: underline;
+  color: #000;
+}
+/* fixe */
+#description.ytd-playlist-sidebar-primary-info-renderer {
+  display: block;
+  color: var(--yt-spec-text-secondary);
+  word-wrap: break-word;
+  margin-bottom: 16px;
+  font-family: "Roboto","Arial",sans-serif;
+  font-size: 1.4rem;
+  line-height: 2rem;
+  font-weight: 400;
+  position: relative;
+}
+/* reorder */
+ytd-playlist-video-renderer[can-reorder][is-editable]:hover #reorder.ytd-playlist-video-renderer, ytd-playlist-video-renderer[persistent-drag-handle] #reorder.ytd-playlist-video-renderer {
+  color: white;
+  padding: 10px 6px;
+}
+}
+
+@-moz-document url-prefix("https://www.youtube.com/feed"), url("https://www.youtube.com/feed/subscriptions") {
+/* feed page exclusive */
+/* Header title */
+#guide-button.ytd-masthead::after {
+  margin-right: -400px;
+  content: "Your Feed";
+  color: var(--tubek12-header-text-color);
+  background: none;
+  font-size: 15px;
+  margin-left: 170px;
+  margin-top: -2px;
+  position: absolute;
+}
+/* new button */
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+  content: "Channel Menu";
+  font-size: 12px;
+  color: #fff;
+  background: linear-gradient(to bottom,#4495e7 0,#0053a6 100%);
+  position: absolute;
+  padding: 11px 56px;
+  margin-top: 25px;
+  text-shadow: 0 -1px 0 rgba(0,0,0,.5);
+  box-shadow: inset 0 1px 0 rgba(256,256,256,.35);
+  border-color: #0053a6 #0053a6 #000 !important;
+  border: 1px solid;
+  z-index: 99922332129;
+  border-radius: 2px;
+  font-weight: bold;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition:hover::after {
+  background: linear-gradient(to bottom,#096bd2 0,#0053a6 100%);
+  box-shadow: inset 0 1px 0 rgba(256,256,256,0.35),0 1px 3px rgba(0,0,0,0.5);
+  border-color: #002d59 #002d59 #000 !important;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition:active::after {
+  background: linear-gradient(to bottom, #003386, #094ba2 100%);
+  box-shadow: inset 0 2px 4px rgba(26,26,26,0.9),0 1px 3px rgba(0,0,0,0);
+  border: 2px solid;
+  border-color: #ccc !important;
+}
+/* animations */
+ytd-section-list-renderer {
+  animation-name: homefadein;
+  animation-duration: 1s;
+  animation-iteration-count: 1;
+  opacity: 100%;
+}
+ytd-rich-grid-renderer {
+  animation-name: homefadeout;
+  animation-duration: 1s;
+  animation-iteration-count: 1;
+  opacity: 0%;
+}
+@keyframes homefadeout {
+  0%   {opacity: 100%;}
+  100%   {opacity: 0%;}
+}
+/* library pfp */
+#thumbnail.ytd-profile-column-user-info-renderer {
+  border-radius: var(--tubek12-pfp-border-radius);
+}
+}
+
+@-moz-document url("https://www.youtube.com"), url("https://www.youtube.com/") {
+/* home page exclusive & animations */
+
+if updateNotify {
+    if not updateNotify13 {
+/* update message */
+#nav::before {
+  content: "";
+  background-image: url("https://s.ytimg.com/yt/imgbin/www-refresh-vflMLqC23.png");
+  display: block;
+  width: 33px;
+  height: 29px;
+  color: red;
+  position: absolute;
+  font-size: 33px;
+  margin-left: 257px;
+  margin-top: 62px;
+}
+if greenBanner {
+#nav::after {
+  background: var(--tubek12-realityshade-green-banner);
+}
+#nav::before {
+  background-position: 0 -90px !important;
+}
+@media only screen and (max-width: 1312px) {
+#nav::before {
+  background-position: 0px -52px !important;       
+}
+#nav::after {
+  content: "New features are available! Go to TubeK12's settings (in Stylus) to check it out! (and also to dismiss this banner) Please note that you are using a strictly unsupported screen resolution (under 1312 pixels wide). Try zooming out until this banner turns green." !important;
+  background: var(--tubek12-realityshade-red-banner) !important;
+}
+}
+}
+if not greenBanner {
+#nav::after {
+  background: var(--tubek12-realityshade-blue-banner);
+}
+#nav::before {
+  background-position: -279px -120px !important;
+}
+@media only screen and (max-width: 1312px) {
+#nav::before {
+  background-position: 0px -52px !important;       
+}
+#nav::after {
+  content: "New features are available! Go to TubeK12's settings (in Stylus) to check it out! (and also to dismiss this banner) Please note that you are using a strictly unsupported screen resolution (under 1312 pixels wide). Try zooming out until this banner turns blue." !important;
+  background: var(--tubek12-realityshade-red-banner) !important;
+}
+}
+}
+#nav::after {
+  /*content: 'TubeK12 has been updated to version 1.3.0! This is a major update, focusing mainly on the homepage and feed. Important customization options have been added, so review your settings. This message can be disabled in the style settings. (The gear icon next to TubeK12 in the Stylus menu.)';*/
+  content: "New features are available! Go to TubeK12's settings (in Stylus) to check it out! (and also to dismiss this banner) Important options near the top.";
+  margin: 0 250px 0 250px;
+  min-width: 800px !important;
+  padding: 11.5px 11px 10.5px 50px;
+  display: block;
+  margin-top: 62px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: #fff;
+  text-shadow: 0 -1px 1px rgba(0,0,0,.45);
+  font-weight: bold;
+  opacity: 100%;
+  transition-duration: 0.5s;
+  box-shadow: 0 1px 2px rgba(0,0,0,.5),inset 0 0 1px rgba(0,0,0,.2);
+}
+/* WHYYYY */
+#contentContainer.tp-yt-app-drawer[opened] {
+  background: none !important;
+}
+ytd-app:not([use-content-visibility]) #page-manager.ytd-app {
+  display: flex;
+  flex: 1;
+    flex-basis: 0%;
+  flex-basis: 0.000000001px;
+  margin-top: 1px;
+}
+/* sidebar position */
+/* top part of sidebar */
+#start.ytd-masthead {
+  background: #6a6a6a;
+  padding: 8px 30.5px;
+  margin-left: -234px;
+  border-top-left-radius: 5px;
+  margin-top: 249px;
+  width: 159.5px;
+  transition-duration: formatAnim;
+  transition-delay: reformDelay;
+  transition-timing-function: cubic-bezier(.65,.05,.22,.85);
+}
+/* the sidebar itself */
+tp-yt-app-drawer.ytd-app[persistent] {
+  margin-top: 123px;
+  width: var(--tubek12-sidebar-width);
+  margin-left: 250px;
+}
+/* logo position */
+#logo.ytd-masthead {
+  width: 129px;
+  margin-left: -80px;
+  margin-top: -247px;
+  transition-duration: formatAnim;
+  transition-delay: reformDelay;
+  transition-timing-function: cubic-bezier(.65,.05,.22,.85);
+}
+#guide-button.ytd-masthead {
+  z-index: 9999999;
+}
+ytd-mini-guide-renderer.ytd-app {
+  z-index: 0;
+  margin-top: 80px;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+  margin-top: 90px !important;
+}
+#header.ytd-browse {
+  margin-top: 24.5px;
+}
+}
+}
+/* new button */
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+  content: "Channel Menu";
+  font-size: 12px;
+  color: #fff;
+  background: linear-gradient(to bottom,#4495e7 0,#0053a6 100%);
+  position: absolute;
+  padding: 11px 56px;
+  margin-top: 25px;
+  text-shadow: 0 -1px 0 rgba(0,0,0,.5);
+  box-shadow: inset 0 1px 0 rgba(256,256,256,.35);
+  border-color: #0053a6 #0053a6 #000 !important;
+  border: 1px solid;
+  z-index: 99922332129;
+  border-radius: 2px;
+  font-weight: bold;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition:hover::after {
+  background: linear-gradient(to bottom,#096bd2 0,#0053a6 100%);
+  box-shadow: inset 0 1px 0 rgba(256,256,256,0.35),0 1px 3px rgba(0,0,0,0.5);
+  border-color: #002d59 #002d59 #000 !important;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition:active::after {
+  background: linear-gradient(to bottom, #003386, #094ba2 100%);
+  box-shadow: inset 0 2px 4px rgba(26,26,26,0.9),0 1px 3px rgba(0,0,0,0);
+  border: 2px solid;
+  border-color: #ccc !important;
+}
+ytd-rich-grid-renderer {
+  animation-name: homefadein;
+  animation-duration: 1s;
+  animation-iteration-count: 1;
+}
+@keyframes homefadein {
+  0%   {opacity: 0%;}
+  100%   {opacity: 100%;}
+}
+ytd-section-list-renderer {
+  animation-name: homefadeout;
+  animation-duration: 1s;
+  animation-iteration-count: 1;
+  opacity: 0%;
+}
+@keyframes homefadeout {
+  0%   {opacity: 100%;}
+  100%   {opacity: 0%;}
+}
+}
+@-moz-document url-prefix("https://www.youtube.com/feed/subscriptions") {
+/* subs page exclusive */
+
+/* manage */
+#subscribe-button {
+  margin-top: -87px;
+  z-index: 2090;
+  margin-right: -70px;
+  background: #000;
+  padding: 1px;
+}
+ytd-button-renderer.style-blue-text[is-paper-button] {
+  --yt-formatted-string-deemphasize-color: var(--yt-spec-icon-disabled);
+  color: #fff;
+}
+
+/* creator name (Do not add underline when hovering.) */
+#title.ytd-shelf-renderer {
+  color: #555;
+  font-family: arial;
+  font-size: 12px;
+  line-height: 2.2rem;
+  font-weight: bold;
+  max-height: 2.2rem;
+  overflow: hidden;
+  display: block;
+  letter-spacing: 0.25px;
+}
+#title.ytd-shelf-renderer:hover {
+  color: var(--tubek12-video-title-text-color-hover);
+}
+#title.ytd-shelf-renderer::after {
+  content: "uploaded a video";
+  color: #555;
+  font-size: 11px;
+  margin-left: 6px;
+  font-weight: 400;
+  letter-spacing: 0px !important;
+}
+/* title (needed for consitent height) */
+#video-title.ytd-video-renderer {
+  max-height: 20px;
+  max-width: 800px !important;
+}
+/* views */
+#metadata-line.ytd-video-meta-block span.ytd-video-meta-block {
+  display: block;
+}
+#metadata-line.ytd-video-meta-block span.ytd-video-meta-block:nth-last-child(2) {
+  margin-top: -75px;
+  position: absolute;
+  color: #888;
+  font-size: 10px !important;
+  margin-left: -64px;
+  font-weight: 400;
+  letter-spacing: 0px !important;
+}
+ytd-video-meta-block:not([rich-meta]) #metadata-line.ytd-video-meta-block {
+  display: block;
+}
+#metadata.ytd-video-meta-block {
+  /*display: block;*/
+}
+/* video title */
+#video-title.ytd-video-renderer {
+  color: var(--tubek12-normal-text-color);
+  font-family: arial !important;
+  font-size: 16px;
+  line-height: 2rem;
+  font-weight: 600;
+}
+/* bg */
+if not darkMode {
+#primary.ytd-two-column-browse-results-renderer {
+  background: #fff !important;
+}
+ytd-item-section-renderer {
+  background: #fff !important;
+  box-shadow: none;
+}
+}
+if darkMode {
+#primary.ytd-two-column-browse-results-renderer {
+  background: #000 !important;
+}
+ytd-item-section-renderer {
+  background: #000 !important;
+  box-shadow: none;
+}
+}
+ytd-section-list-renderer:not([hide-bottom-separator]):not([page-subtype="history"]):not([page-subtype="memberships-and-purchases"]):not([page-subtype="ypc-offers"]) #contents.ytd-section-list-renderer > .ytd-section-list-renderer:not(:last-child):not(ytd-page-introduction-renderer):not([item-dismissed]).ytd-section-list-renderer:not([has-destination-shelf-renderer]).ytd-section-list-renderer:not(ytd-minor-moment-header-renderer) {
+  border-bottom: 1px solid var(--yt-spec-10-percent-layer);
+}
+}
+
+@-moz-document url-prefix("https://www.youtube.com/feed/explore") {
+/* explore page exclusive */
+/* Header title */
+#guide-button.ytd-masthead::after {
+  margin-right: -400px;
+  content: "Explore";
+  color: var(--tubek12-header-text-color);
+  background: none;
+  font-size: 15px;
+  margin-left: 170px;
+  margin-top: -2px;
+  position: absolute;
+}
+if goodExplore {
+    /* new button */
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+  content: "";
+  font-size: 12px;
+  color: #fff;
+  background: none !important;
+  position: absolute;
+  margin-left: -998px;
+  padding:0;
+  margin-top: 25px;
+  text-shadow: 0 -1px 0 rgba(0,0,0,.5);
+  box-shadow: inset 0 1px 0 rgba(256,256,256,.35);
+  border-color: #0053a6 #0053a6 #000 !important;
+  border: 0px solid;
+  z-index: 99922332129;
+  border-radius: 2px;
+  font-weight: bold;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition:hover::after {
+  background: linear-gradient(to bottom,#096bd2 0,#0053a6 100%);
+  box-shadow: inset 0 1px 0 rgba(256,256,256,0.35),0 1px 3px rgba(0,0,0,0.5);
+  border-color: #002d59 #002d59 #000 !important;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition:active::after {
+  background: linear-gradient(to bottom, #003386, #094ba2 100%);
+  box-shadow: inset 0 2px 4px rgba(26,26,26,0.9),0 1px 3px rgba(0,0,0,0);
+  border: 2px solid;
+  border-color: #ccc !important;
+}
+/* hey mom, i made a new sidebar :D */
+ytd-destination-shelf-renderer[fully-visible-rows="2"][is-show-more-visible] #destination-buttons.ytd-destination-shelf-renderer {
+  max-height: none;
+  margin-top: 50px;
+  border-left: 1px solid #ddd;
+}
+#destination-buttons.ytd-destination-shelf-renderer {
+  overflow-y: hidden;
+  width: 180px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  margin-right: -4px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  position: absolute;
+  box-shadow: inset -8px 0 18px #888;
+}
+#destination-icon.ytd-destination-button-renderer {
+  display: none;
+}
+#destination-label.ytd-destination-button-renderer {
+  color: var(--tubek12-normal-text-color);
+  font-size: 13px;
+}
+#destination-label-wrapper.ytd-destination-button-renderer {
+  margin: 0 30px;
+  height: 48px;
+  max-height: 48px;
+  display: flex;
+  align-items: center;
+}
+#destination-buttons.ytd-destination-shelf-renderer > .ytd-destination-shelf-renderer {
+  margin-bottom: 0;
+}
+ytd-destination-button-renderer {
+  width: 180px;
+  background-color: rgba(255,255,255,.45);
+  border-radius: 0;
+  display: flex;
+  height: 48px;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #ccc;
+}
+ytd-destination-button-renderer:hover {
+  background: rgba(255,255,255,.80);
+  text-decoration: none;
+  box-shadow: none;
+}
+#contents.ytd-item-section-renderer > ytd-exploratory-results-renderer.ytd-item-section-renderer:last-child, #contents.ytd-item-section-renderer > ytd-reel-shelf-renderer.ytd-item-section-renderer:last-child, #contents.ytd-item-section-renderer > ytd-shelf-renderer.ytd-item-section-renderer:last-child {
+  margin-top: 36px;
+  margin-left: 210px;
+}
+/* hide sidebar and header */
+    #header.ytd-browse {
+  display: none; 
+}
+    #start.ytd-masthead {
+  background: transparent;
+  margin-left: 200px;
+  border-top-left-radius: 5px;
+  margin-top: 0;
+  width: 159.5px;
+  transition-delay: reformDelay;
+}
+    #logo.ytd-masthead {
+  width: 129px;
+  margin-top: 0px;
+  transition-delay: reformDelay;
+  margin-left: 0px;
+}
+        a.yt-simple-endpoint.ytd-button-renderer {
+  color: inherit;
+  border-radius: inherit;
+  text-decoration: none;
+  margin-left: 0;
+  margin-top: 0;
+}
+#guide-button.ytd-masthead {
+  display: none !important;
+}
+    /* hide sidebar */
+    #contentContainer.tp-yt-app-drawer[persistent] {
+  width: 0%;
+  display: none;
+}
+tp-yt-app-drawer.ytd-app[persistent] {
+  display: none;
+}
+/* Margins taken from channel page */
+ytd-app[guide-persistent-and-visible] ytd-page-manager.ytd-app {
+  margin: 0 220px 0 220px !important;
+}
+ytd-two-column-browse-results-renderer.grid:not(.grid-disabled) {
+  max-width: 1040px !important;
+  min-width: 0;
+}
+}
+}
+
+
+@-moz-document url-prefix("https://www.youtube.com/playlist") {
+/* playlist page exclusive animations */
+/* Header title */
+#guide-button.ytd-masthead::after {
+  margin-right: -400px;
+  content: "Playlist";
+  color: var(--tubek12-header-text-color);
+  background: none;
+  font-size: 15px;
+  margin-left: 170px;
+  margin-top: -2px;
+  position: absolute;
+}
+/* new button */
+.style-scope.ytd-topbar-menu-button-renderer.no-transition::after {
+  content: "Channel Menu";
+  font-size: 12px;
+  color: #fff;
+  background: linear-gradient(to bottom,#4495e7 0,#0053a6 100%);
+  position: absolute;
+  padding: 11px 56px;
+  margin-top: 25px;
+  text-shadow: 0 -1px 0 rgba(0,0,0,.5);
+  box-shadow: inset 0 1px 0 rgba(256,256,256,.35);
+  border-color: #0053a6 #0053a6 #000 !important;
+  border: 1px solid;
+  z-index: 99922332129;
+  border-radius: 2px;
+  font-weight: bold;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition:hover::after {
+  background: linear-gradient(to bottom,#096bd2 0,#0053a6 100%);
+  box-shadow: inset 0 1px 0 rgba(256,256,256,0.35),0 1px 3px rgba(0,0,0,0.5);
+  border-color: #002d59 #002d59 #000 !important;
+}
+.style-scope.ytd-topbar-menu-button-renderer.no-transition:active::after {
+  background: linear-gradient(to bottom, #003386, #094ba2 100%);
+  box-shadow: inset 0 2px 4px rgba(26,26,26,0.9),0 1px 3px rgba(0,0,0,0);
+  border: 2px solid;
+  border-color: #ccc !important;
+}
+ytd-rich-grid-renderer {
+  animation-name: homefadeout;
+  animation-duration: 1s;
+  animation-iteration-count: 1;
+}
+@keyframes homefadein {
+  0%   {opacity: 0%;}
+  100%   {opacity: 100%;}
+}
+ytd-section-list-renderer {
+  animation-name: listoutandin;
+  animation-duration: 1.5s;
+  animation-iteration-count: 1;
+  opacity: 100%;
+}
+@keyframes listoutandin {
+  0%   {opacity: 100%;}
+  25%   {opacity: 0%;}
+  50%   {opacity: 0%;}
+  100%   {opacity: 100%;}
+}
+}
+@-moz-document url-prefix("https://www.youtube.com/playlist?list=LL") {
+/* liked videos exclusive */
+
+/* Header title */
+#guide-button.ytd-masthead::after {
+  margin-right: -400px;
+  content: "Liked Videos";
+  color: var(--tubek12-header-text-color);
+  background: none;
+  font-size: 15px;
+  margin-left: 170px;
+  margin-top: -2px;
+  position: absolute;
+}
+}
+@-moz-document url-prefix("https://www.youtube.com/playlist?list=WL") {
+/* watch later exclusive */
+
+/* Header title */
+#guide-button.ytd-masthead::after {
+  margin-right: -400px;
+  content: "Watch Later";
+  color: var(--tubek12-header-text-color);
+  background: none;
+  font-size: 15px;
+  margin-left: 170px;
+  margin-top: -2px;
+  position: absolute;
+}
+}
+@-moz-document url-prefix("https://www.youtube.com/feed/trending") {
+/* trending exclusive */
+
+/* Header title */
+#guide-button.ytd-masthead::after {
+  margin-right: -400px;
+  content: "Trending";
+  color: var(--tubek12-header-text-color);
+  background: none;
+  font-size: 15px;
+  margin-left: 210px;
+  margin-top: -2px;
+  position: absolute;
+}
+#guide-icon.ytd-masthead {
+  color: transparent;
+  background: no-repeat url("http://s.ytimg.com/yt/imgbin/www-guide-vflV-qsIq.png");
+  background-position-x: 0px;
+  background-position-y: -2072px;
+  height: 34px;
+  width: 34px;
+  margin-left: 178px;
+  margin-top: -22px;
+  z-index: 3000;
+  position: absolute;
+}
+}
+@-moz-document url-prefix("https://www.youtube.com/results?search_query=%2F%2F") {
+#contents {
+  display: flex;
+  flex-direction: column-reverse;
+  margin-top: -1px;
+}
+}
