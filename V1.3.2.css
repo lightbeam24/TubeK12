@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name           TubeK12 - 2012 YouTube Recreation
 @namespace      youtube.com
-@version        1.3.1
+@version        1.3.2
 @description    Attempts to recreate the 2012 YouTube layout
 @author         lightbeam
 @preprocessor stylus
@@ -2822,6 +2822,9 @@ if channelList {
 }
 .icon-container #img {
   width: 24px;
+}
+#links-holder #img {
+  width: 30px !important;
 }
 #img {
   width: 262px;
